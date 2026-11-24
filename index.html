@@ -1,0 +1,2818 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="CONNECT for schools – a tool that helps schools get their students aged 12–18 out into the neighbourhood, with free activities near them.">
+<title>CONNECT for schools</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: app shell — sticky top bar, routed single-column views, bottom tab bar on phones */
+:root{
+  --purple:#7655E8; --lav:#E9E2FF; --coral:#FF796D; --yellow:#FFE58A; --blue:#DCEEFF; --white:#FFFFFF; --navy:#25243A;
+  --bg:#FAF8FF; --surface:#FFFFFF; --ink:#25243A; --muted:#66627E; --line:#E7E1F7;
+  --soft-lav:#E9E2FF; --soft-blue:#DCEEFF; --soft-yellow:#FFF3C4; --soft-coral:#FFE3DF;
+  --accent:#7655E8; --accent-ink:#FFFFFF; --accent-text:#5B3FD0;
+  --ok:#1E9E62; --warn:#B7791F; --bad:#D6453A;
+  --shadow:0 10px 30px -12px rgba(37,36,58,.22);
+  --display:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --r-lg:26px; --r-md:18px; --r-sm:12px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#16152A; --surface:#211F38; --ink:#F3F0FF; --muted:#ABA6C8; --line:#35325A;
+  --soft-lav:#2D2858; --soft-blue:#1D2C48; --soft-yellow:#3D3620; --soft-coral:#45282C;
+  --accent:#8C70F2; --accent-ink:#FFFFFF; --accent-text:#B9A6FF;
+  --ok:#4CD495; --warn:#F2C25B; --bad:#FF8A80; --shadow:0 10px 30px -12px rgba(0,0,0,.6); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#16152A; --surface:#211F38; --ink:#F3F0FF; --muted:#ABA6C8; --line:#35325A;
+  --soft-lav:#2D2858; --soft-blue:#1D2C48; --soft-yellow:#3D3620; --soft-coral:#45282C;
+  --accent:#8C70F2; --accent-ink:#FFFFFF; --accent-text:#B9A6FF;
+  --ok:#4CD495; --warn:#F2C25B; --bad:#FF8A80; --shadow:0 10px 30px -12px rgba(0,0,0,.6); color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--surface)}
+h1,h2,h3,h4{font-family:var(--display);line-height:1.08;margin:0;text-wrap:balance;letter-spacing:-.01em}
+p{margin:0}
+a{color:var(--accent-text)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--coral);outline-offset:2px;border-radius:8px}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-text)}
+.muted{color:var(--muted)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:18px;height:64px}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.02em}
+.logo .mark{width:30px;height:30px}
+.nav{display:flex;gap:4px;margin-left:12px}
+.nav a{padding:8px 14px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:600;font-size:15px}
+.nav a:hover{color:var(--ink);background:var(--soft-lav)}
+.nav a[aria-current="page"]{color:var(--accent-text);background:var(--soft-lav)}
+.top .right{margin-left:auto;display:flex;gap:10px;align-items:center}
+.pts-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--yellow);color:var(--navy);font-weight:700;font-size:14px;text-decoration:none;font-variant-numeric:tabular-nums}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;padding:12px 20px;font-weight:700;font-size:15px;cursor:pointer;text-decoration:none;transition:transform .15s ease,box-shadow .15s ease,background .15s;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);box-shadow:0 6px 0 -2px color-mix(in srgb,var(--accent) 55%,#000)}
+.btn.primary:hover{transform:translateY(-2px)}
+.btn.coral{background:var(--coral);color:#2a1210}
+.btn.ghost{background:var(--soft-lav);color:var(--accent-text)}
+.btn.line{background:transparent;border:2px solid var(--line);color:var(--ink)}
+.btn.small{padding:8px 14px;font-size:14px}
+.btn[disabled],.btn.disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn svg{width:18px;height:18px}
+
+/* views */
+main{padding-bottom:110px}
+.view{display:none}
+.view.on{display:block;animation:fade .35s ease}
+@keyframes fade{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
+section.block{padding-block:40px}
+.sec-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.sec-head h2{font-size:clamp(26px,4vw,38px);font-weight:800}
+.demo-banner{display:flex;gap:10px;align-items:flex-start;background:var(--soft-yellow);border-radius:var(--r-sm);padding:12px 14px;font-size:14px}
+.demo-banner b{white-space:nowrap}
+
+/* hero */
+.hero{padding-block:36px 20px}
+.hero .wrap{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center}
+.hero h1{font-size:clamp(36px,5.2vw,66px);font-weight:800;letter-spacing:-.03em}
+.hero h1 em{font-style:normal;color:var(--accent-text);position:relative;white-space:nowrap}
+.hero h1 em::after{content:"";position:absolute;left:0;right:0;bottom:.06em;height:.22em;background:var(--yellow);z-index:-1;border-radius:4px;opacity:.9}
+.hero .sub{font-size:19px;color:var(--muted);margin-top:16px;max-width:34em}
+.hero .ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.finder{margin-top:26px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;box-shadow:var(--shadow);max-width:560px}
+.finder label{font-weight:700;font-size:14px}
+.finder select{flex:1 1 160px;min-width:0}
+select,input[type=text],input[type=email],input[type=url],input[type=date],input[type=number],input[type=search],textarea{background:var(--bg);border:2px solid var(--line);border-radius:12px;padding:10px 12px;width:100%}
+select:focus,input:focus,textarea:focus{border-color:var(--accent);outline:none}
+.collage{position:relative;aspect-ratio:1/1;max-width:100%}
+.collage .tile{position:absolute;border-radius:28px;overflow:hidden;box-shadow:var(--shadow);display:flex;align-items:flex-end;padding:16px;color:#fff;font-family:var(--display);font-weight:700;font-size:18px}
+.collage .tile svg.big{position:absolute;right:-8%;top:-6%;width:70%;height:70%;opacity:.28;stroke:#fff}
+.collage .t1{left:0;top:4%;width:56%;height:52%}
+.collage .t2{right:0;top:0;width:40%;height:40%}
+.collage .t3{right:4%;top:44%;width:44%;height:52%}
+.collage .t4{left:6%;top:60%;width:44%;height:36%}
+.float-chip{position:absolute;background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 14px;font-weight:700;font-size:14px;box-shadow:var(--shadow);display:flex;gap:6px;align-items:center;animation:bob 4s ease-in-out infinite}
+.float-chip.c1{left:46%;top:2%}.float-chip.c2{left:-2%;top:52%;animation-delay:-1.5s}.float-chip.c3{right:0;bottom:0;animation-delay:-3s}
+@keyframes bob{50%{transform:translateY(-8px)}}
+.slogan-strip{background:var(--navy);color:#fff;overflow:hidden;padding-block:14px;margin-top:24px}
+.slogan-strip .row{display:flex;gap:40px;white-space:nowrap;font-family:var(--display);font-weight:700;font-size:20px;animation:marq 28s linear infinite;width:max-content}
+.slogan-strip span.dot{color:var(--yellow)}
+@keyframes marq{to{transform:translateX(-50%)}}
+
+/* carousel & cards */
+.carousel{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(270px,320px);gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 4px 18px;scrollbar-width:thin}
+.carousel>*{scroll-snap-align:start}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px}
+.card{background:var(--surface);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column;border:1px solid var(--line);transition:transform .2s ease,box-shadow .2s ease;min-width:0}
+.card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.art{position:relative;height:150px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.art svg.ic{width:74px;height:74px;stroke:#fff;stroke-width:1.6;fill:none;position:relative;z-index:1;transition:transform .3s ease}
+.card:hover .art svg.ic{transform:rotate(-8deg) scale(1.08)}
+.art::before,.art::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.16)}
+.art::before{width:180px;height:180px;right:-50px;top:-70px}
+.art::after{width:110px;height:110px;left:-30px;bottom:-50px}
+.art .labels{position:absolute;left:12px;top:12px;display:flex;gap:6px;flex-wrap:wrap;z-index:2;max-width:75%}
+.fav{position:absolute;right:10px;top:10px;z-index:2;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#25243A;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s}
+.fav svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2}
+.fav[aria-pressed="true"]{color:#E23B5A}.fav[aria-pressed="true"] svg{fill:currentColor;animation:pop .35s ease}
+@keyframes pop{50%{transform:scale(1.35)}}
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:999px;white-space:nowrap}
+.tag.free{background:#FFE58A;color:#25243A}
+.tag.low{background:#DCEEFF;color:#1F3A66}
+.tag.aid{background:#FFFFFF;color:#5B3FD0}
+.tag.demo{background:#25243A;color:#FFE58A}
+.tag.full{background:#D6453A;color:#fff}
+.tag.reg{background:var(--soft-lav);color:var(--accent-text)}
+.tag.noreg{background:var(--soft-blue);color:var(--ink)}
+.tag.tbc{background:var(--soft-coral);color:var(--ink)}
+.tag.ok{background:color-mix(in srgb,var(--ok) 20%,transparent);color:var(--ok)}
+.tag.exp{background:var(--line);color:var(--muted)}
+.cbody{padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px;flex:1}
+.cmeta{font-size:13px;font-weight:700;color:var(--muted);display:flex;gap:6px;align-items:center}
+.cmeta i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.card h3{font-size:21px;font-weight:700}
+.card p.desc{color:var(--muted);font-size:15px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:14px;margin:0}
+.facts dt{color:var(--muted);display:flex;align-items:center}
+.facts dt svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+.facts dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.tbc-text{color:var(--muted);font-style:italic}
+.ctags{display:flex;gap:6px;flex-wrap:wrap}
+.cactions{display:flex;gap:8px;margin-top:auto;padding-top:6px;flex-wrap:wrap}
+.cactions .btn{flex:1 1 120px}
+
+.cat-sports{background:linear-gradient(135deg,#FF796D,#FF9F6B)}
+.cat-art{background:linear-gradient(135deg,#F2B62F,#FF9A6B)}
+.cat-music{background:linear-gradient(135deg,#7655E8,#A88BFF)}
+.cat-education{background:linear-gradient(135deg,#3F8FE0,#7FB8F0)}
+.cat-technology{background:linear-gradient(135deg,#1FA59A,#4ECDBE)}
+.cat-culture{background:linear-gradient(135deg,#D9579F,#F28CC3)}
+.cat-social{background:linear-gradient(135deg,#2E9E6A,#62C98F)}
+
+/* category cards */
+.cats{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.catcard{border:0;border-radius:var(--r-lg);padding:18px;min-height:150px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;cursor:pointer;color:#fff;text-align:left;position:relative;overflow:hidden;transition:transform .2s ease}
+.catcard:hover{transform:translateY(-4px) rotate(-1deg)}
+.catcard svg{width:40px;height:40px;stroke:#fff;fill:none;stroke-width:1.8}
+.catcard b{font-family:var(--display);font-size:20px}
+.catcard small{opacity:.9;font-weight:600}
+
+/* district chips */
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:2px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-weight:600;font-size:14px;cursor:pointer;display:inline-flex;gap:6px;align-items:center;transition:background .15s,border-color .15s}
+.chip:hover{border-color:var(--accent)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip .n{font-variant-numeric:tabular-nums;opacity:.75;font-size:12px}
+.chip i{width:10px;height:10px;border-radius:50%;display:inline-block}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:s;position:relative}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;position:relative}
+.step .num{font-family:var(--display);font-weight:800;font-size:44px;color:var(--accent);line-height:1}
+.step h3{font-size:22px;margin:10px 0 6px}
+.step .ill{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.step .ill svg{width:30px;height:30px;stroke:var(--navy);fill:none;stroke-width:1.8}
+.timeline{position:relative}
+.timeline::before{content:"";position:absolute;left:4%;right:4%;top:50px;height:4px;background:repeating-linear-gradient(90deg,var(--accent) 0 12px,transparent 12px 22px);opacity:.35}
+
+.cta-big{background:var(--accent);color:#fff;border-radius:34px;padding:48px 28px;text-align:center;position:relative;overflow:hidden}
+.cta-big h2{font-size:clamp(34px,6vw,64px);font-weight:800}
+.cta-big p{opacity:.9;margin-top:10px;font-size:18px}
+.cta-big .btn{background:var(--yellow);color:var(--navy);font-size:18px;padding:16px 30px;margin-top:22px}
+.cta-big::before{content:"";position:absolute;width:300px;height:300px;border-radius:50%;background:var(--coral);opacity:.55;left:-90px;bottom:-160px}
+.cta-big::after{content:"";position:absolute;width:200px;height:200px;border-radius:50%;background:var(--lav);opacity:.25;right:-50px;top:-70px}
+.cta-big>*{position:relative;z-index:1}
+
+/* explore */
+.explore-layout{display:grid;grid-template-columns:290px 1fr;gap:26px;align-items:start}
+.filters{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;position:sticky;top:calc(80px + env(safe-area-inset-top,0px));display:flex;flex-direction:column;gap:18px;max-height:calc(100vh - 100px);overflow:auto}
+.filters h4{font-family:var(--body);font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.searchbar{position:relative}
+.searchbar svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:20px;height:20px;stroke:var(--muted);fill:none;stroke-width:2}
+.searchbar input{padding:16px 16px 16px 48px;border-radius:999px;font-size:17px;background:var(--surface)}
+.results-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:16px 0;flex-wrap:wrap}
+.results-head b{font-variant-numeric:tabular-nums}
+.filter-toggle{display:none}
+.empty{text-align:center;padding:50px 20px;background:var(--surface);border:2px dashed var(--line);border-radius:var(--r-lg)}
+.empty svg{width:56px;height:56px;stroke:var(--accent);fill:none;stroke-width:1.6}
+.empty h3{font-size:24px;margin:10px 0 6px}
+
+/* map */
+.map-layout{display:grid;grid-template-columns:1.5fr 1fr;gap:22px;align-items:start}
+.mapbox{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:12px;overflow-x:auto}
+.mapbox svg{width:100%;min-width:520px;height:auto;display:block}
+.dist rect{fill:var(--soft-lav);stroke:var(--surface);stroke-width:6;transition:fill .2s}
+.dist.on rect{fill:var(--soft-yellow)}
+.dist text{font-family:var(--body);font-weight:700;font-size:13px;fill:var(--ink)}
+.dist text.cnt{font-weight:600;font-size:11px;fill:var(--muted)}
+.sea{fill:var(--soft-blue)}
+.marker{cursor:pointer}
+.marker circle.m{stroke:var(--surface);stroke-width:3;transition:r .15s}
+.marker:hover circle.m,.marker:focus circle.m{r:13}
+.marker.sel circle.m{stroke:var(--ink);stroke-width:3}
+.marker:focus{outline:none}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;display:flex;flex-direction:column;gap:14px}
+.legend{display:flex;flex-wrap:wrap;gap:6px}
+
+/* achievements */
+.points-hero{background:var(--navy);color:#fff;border-radius:34px;padding:32px;display:grid;grid-template-columns:1.4fr 1fr;gap:24px;align-items:center;position:relative;overflow:hidden}
+.points-hero h2{font-size:clamp(30px,5vw,54px);font-weight:800}
+.points-hero h2 .num{color:var(--yellow);font-variant-numeric:tabular-nums}
+.bar{height:18px;background:rgba(255,255,255,.14);border-radius:999px;overflow:hidden;margin-top:16px}
+.bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--coral),var(--yellow));border-radius:999px;transition:width 1s cubic-bezier(.2,.8,.2,1)}
+.bar.light{background:var(--line)}
+.bar.light>span{background:linear-gradient(90deg,var(--accent),var(--coral))}
+.bar.thin{height:10px;margin-top:10px}
+.ring{justify-self:center;width:170px;height:170px;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .lbl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-weight:700}
+.ring .lbl b{font-family:var(--display);font-size:38px;color:var(--yellow);font-variant-numeric:tabular-nums}
+.tabs{display:flex;gap:8px;margin:26px 0 6px;flex-wrap:wrap}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
+.badge{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 14px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+.badge svg.bd{width:96px;height:96px}
+.badge.locked svg.bd{filter:grayscale(1);opacity:.35}
+.badge.unlocked svg.bd{animation:badgeIn .7s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes badgeIn{from{transform:scale(.3) rotate(-30deg);opacity:0}}
+.badge h4{font-size:15px;font-family:var(--body);font-weight:800;letter-spacing:.04em}
+.badge p{font-size:13px;color:var(--muted)}
+.badge .prog{font-size:12px;font-weight:700;color:var(--accent-text);font-variant-numeric:tabular-nums}
+.rewards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.reward .tag{white-space:normal}
+@media (max-width:760px){.rewards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:460px){.rewards{grid-template-columns:1fr}}
+.reward{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;display:flex;flex-direction:column;gap:8px}
+.reward .pts{font-family:var(--display);font-weight:800;font-size:30px;color:var(--accent-text);font-variant-numeric:tabular-nums}
+.reward.reached{background:var(--soft-yellow);border-color:transparent}
+.history{display:flex;flex-direction:column;gap:8px}
+.hist{display:flex;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 14px}
+.hist .dot{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none}
+.hist .dot svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2}
+.hist .grow{flex:1;min-width:0}
+.hist b.p{font-variant-numeric:tabular-nums;color:var(--ok)}
+
+/* challenges */
+.challenges{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.chal{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;display:flex;flex-direction:column;gap:10px}
+.chal .ch-top{display:flex;justify-content:space-between;gap:10px;align-items:start}
+.chal h3{font-size:22px}
+.chal .ptsb{background:var(--yellow);color:var(--navy);font-weight:800;border-radius:999px;padding:4px 10px;font-size:13px;white-space:nowrap}
+.chal.done{background:var(--soft-lav);border-color:transparent}
+.chal .rel{display:flex;gap:6px;flex-wrap:wrap}
+.chal .rel button{border:0;background:var(--bg);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;color:var(--ink)}
+.chal .rel button:hover{background:var(--soft-yellow)}
+
+/* about */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
+.orgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.org{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;display:flex;flex-direction:column;gap:10px}
+.org .oh{display:flex;gap:12px;align-items:center}
+.org .mono{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;color:#fff;flex:none}
+.org h3{font-size:18px}
+.org p{font-size:14px;color:var(--muted)}
+.safety{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.safe{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:14px}
+.safe svg{width:22px;height:22px;stroke:var(--ok);fill:none;stroke-width:2.2;flex:none;margin-top:2px}
+.safe p{font-size:14px}
+.faq details{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:4px 18px;margin-bottom:10px}
+.faq summary{cursor:pointer;font-weight:700;font-size:17px;padding:14px 0;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--display);font-size:24px;color:var(--accent-text);line-height:1}
+.faq details[open] summary::after{content:"–"}
+.faq details p{padding-bottom:16px;color:var(--muted);max-width:65ch}
+.prose{max-width:65ch;display:flex;flex-direction:column;gap:12px;color:var(--muted)}
+.prose strong{color:var(--ink)}
+
+/* profile */
+.profile-grid{display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;display:flex;flex-direction:column;gap:14px}
+.box h3{font-size:22px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label,.field .lab{font-weight:700;font-size:14px}
+.field .hint{font-size:13px;color:var(--muted)}
+.avatar{width:72px;height:72px;border-radius:24px;background:linear-gradient(135deg,var(--purple),var(--coral));display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--display);font-weight:800;font-size:32px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--bg);border-radius:var(--r-md);padding:12px;text-align:center}
+.stat b{display:block;font-family:var(--display);font-size:28px;font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted);font-weight:600}
+
+/* admin */
+.tbl-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg)}
+table{border-collapse:collapse;width:100%;min-width:820px;font-size:14px}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800}
+td .acts{display:flex;gap:6px;flex-wrap:wrap}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:14px}
+.kpi b{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums;display:block}
+.kpi span{font-size:13px;color:var(--muted);font-weight:600}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid .full{grid-column:1/-1}
+.checks{display:flex;gap:14px;flex-wrap:wrap}
+.checks label{display:flex;gap:6px;align-items:center;font-weight:500}
+.err{color:var(--bad);font-size:14px;font-weight:600}
+
+/* dialogs */
+dialog{border:0;padding:0;border-radius:28px;background:var(--surface);color:var(--ink);width:min(680px,calc(100vw - 24px));max-height:calc(100vh - 40px);box-shadow:0 30px 80px -20px rgba(0,0,0,.5)}
+dialog::backdrop{background:rgba(37,36,58,.55);backdrop-filter:blur(3px)}
+dialog[open]{animation:dlg .3s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes dlg{from{transform:translateY(30px) scale(.96);opacity:0}}
+.dlg-body{padding:24px;display:flex;flex-direction:column;gap:16px;overflow:auto;max-height:calc(100vh - 40px)}
+.dlg-x{position:absolute;right:14px;top:14px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.9);color:#25243A;cursor:pointer;z-index:3;display:flex;align-items:center;justify-content:center}
+.dlg-x svg{width:20px;height:20px;stroke:currentColor;stroke-width:2.4;fill:none}
+.detail-art{height:180px}
+.detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.dfact{background:var(--bg);border-radius:var(--r-sm);padding:10px 12px;min-width:0}
+.dfact span{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.dfact b{font-weight:600;overflow-wrap:anywhere}
+.celebrate{text-align:center;padding:30px 24px;display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;overflow:hidden}
+.celebrate .burst{position:relative;width:170px;height:170px;display:flex;align-items:center;justify-content:center}
+.celebrate .rays{position:absolute;inset:0;background:repeating-conic-gradient(var(--yellow) 0 10deg,transparent 10deg 30deg);border-radius:50%;animation:spin 8s linear infinite;mask:radial-gradient(circle,transparent 35%,#000 36%,#000 60%,transparent 70%)}
+.celebrate svg.bd{width:120px;height:120px;position:relative;animation:badgeIn .8s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes spin{to{transform:rotate(360deg)}}
+.confetti{position:absolute;width:10px;height:14px;top:-20px;border-radius:2px;animation:fall 1.8s ease-in forwards}
+@keyframes fall{to{transform:translateY(420px) rotate(540deg);opacity:0}}
+
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:12px 18px;border-radius:16px;font-weight:600;z-index:100;opacity:0;pointer-events:none;transition:all .25s;max-width:calc(100vw - 32px);text-align:center;font-size:15px}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* bottom tab bar (phones) */
+.tabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:55;background:var(--surface);border-top:1px solid var(--line);padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+.tabbar nav{display:grid;grid-template-columns:repeat(6,1fr)}
+.tabbar a{display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:var(--muted);font-size:11px;font-weight:700;padding:6px 0;border-radius:12px}
+.tabbar a svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2}
+.tabbar a[aria-current="page"]{color:var(--accent-text)}
+.tabbar a[aria-current="page"] svg{stroke-width:2.6}
+
+footer{border-top:1px solid var(--line);padding-block:30px;margin-top:30px;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;gap:20px;justify-content:space-between;flex-wrap:wrap}
+footer nav{display:flex;gap:14px;flex-wrap:wrap}
+footer a{color:var(--muted)}
+
+@media (max-width:1000px){
+  .cats{grid-template-columns:repeat(3,1fr)}
+  .steps{grid-template-columns:repeat(2,1fr)}.timeline::before{display:none}
+  .explore-layout,.map-layout,.profile-grid,.two{grid-template-columns:1fr}
+  .filters{position:static;max-height:none}
+  .filter-toggle{display:inline-flex}
+  .filters.collapsed{display:none}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:760px){
+  .nav,.top .right .hide-m{display:none}
+  .tabbar{display:block}
+  .hero .wrap{grid-template-columns:1fr;gap:24px}
+  .collage{max-width:420px;width:100%;justify-self:center}
+  .points-hero{grid-template-columns:1fr;padding:24px}
+  .form-grid{grid-template-columns:1fr}
+  .detail-grid{grid-template-columns:1fr 1fr}
+  section.block{padding-block:28px}
+}
+@media (max-width:460px){
+  .cats{grid-template-columns:repeat(2,1fr)}
+  .steps{grid-template-columns:1fr}
+  .detail-grid{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .hero h1{font-size:40px}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ---------- CONNECT for schools ---------- */
+.skip{position:absolute;left:-999px;top:8px;z-index:200;background:var(--surface);padding:8px 14px;border-radius:10px}
+.skip:focus{left:12px}
+.logo-sub{font-family:var(--body);font-weight:700;font-size:13px;color:var(--muted);letter-spacing:0;margin-left:2px}
+.hero h1 em{white-space:normal;background:linear-gradient(transparent 70%,color-mix(in srgb,var(--yellow) 90%,transparent) 70% 90%,transparent 90%)}
+.hero h1 em::after{display:none}
+.hero{padding-block:44px 30px}
+.key-line{display:flex;gap:10px;align-items:center;margin-top:26px;font-size:17px;color:var(--muted)}
+.key-line b{color:var(--ink)}
+.key-line svg{width:22px;height:22px;stroke:var(--accent);fill:none;stroke-width:2;flex:none}
+.board-ill{position:relative;background:#FFFDF6;color:#25243A;border-radius:18px;padding:26px 24px 22px;box-shadow:0 30px 60px -24px rgba(37,36,58,.45);transform:rotate(1.5deg);max-width:440px;justify-self:center;width:100%;border:1px solid #EFE8D6}
+.pin-dot{position:absolute;top:-9px;left:50%;width:20px;height:20px;border-radius:50%;background:#FF796D;box-shadow:0 3px 0 rgba(0,0,0,.2)}
+.bi-head b{display:block;font:800 26px var(--display)}
+.bi-head span{font-size:14px;color:#66627E;font-weight:600}
+.bi-row{display:flex;gap:12px;align-items:center;border-top:1px dashed #E2DACB;padding:12px 0;margin-top:10px}
+.bi-row i{width:14px;height:44px;border-radius:6px;flex:none}
+.bi-row div{flex:1}
+.bi-row b{display:block;font-size:16px}
+.bi-row span{font-size:13px;color:#66627E}
+.bi-st{color:#F2B62F;font-size:20px;letter-spacing:2px}
+.bi-foot{margin-top:8px;font-weight:800;font-size:15px;color:#C2412F}
+.bi-paper{position:absolute;right:-22px;bottom:-34px;background:#fff;border:1px solid #E7E1F7;border-radius:10px;padding:12px 16px;transform:rotate(-6deg);box-shadow:0 14px 30px -14px rgba(37,36,58,.4);display:flex;flex-direction:column;gap:2px;font-size:13px;min-width:150px}
+.bi-paper b{font-size:13px;margin-bottom:4px}
+.bi-paper span{border-bottom:1px solid #E2DACB;font-family:"Comic Sans MS","Segoe Print",cursive;color:#3F8FE0}
+.roles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.role{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;display:flex;flex-direction:column;gap:8px}
+.role h3{font-size:21px}
+.role-ic{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center}
+.role-ic svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:2}
+.mats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.mat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px;display:flex;flex-direction:column;gap:10px}
+.mat .thumb{aspect-ratio:210/297;background:#fff;border:1px solid #E7E1F7;border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:6px;overflow:hidden}
+.mat .thumb b{font:800 13px var(--display);color:#25243A}
+.mat .thumb i{display:block;height:8px;border-radius:4px;background:#E9E2FF}
+.mat .thumb i.c{background:#FFE3DF}.mat .thumb i.y{background:#FFF3C4}.mat .thumb i.l{height:1px;background:#DDD;border-radius:0;margin-top:8px}
+.mat .thumb .dots{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:6px}
+.mat .thumb .dots span{aspect-ratio:1;border-radius:50%;border:2px dashed #C9BEF5}
+.mat h3{font-size:18px}
+.mat p{font-size:14px}
+/* wizard */
+.wizard{list-style:none;padding:0;margin:0 0 10px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.wizard button{width:100%;text-align:left;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:10px 12px;cursor:pointer;display:flex;gap:10px;align-items:center}
+.wizard button:disabled{cursor:not-allowed;opacity:.55}
+.wizard .n{width:30px;height:30px;border-radius:50%;background:var(--soft-lav);color:var(--accent-text);font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
+.wizard b{display:block;font-size:15px}
+.wizard small{color:var(--muted);font-size:12px}
+.wizard [aria-current="step"]{border-color:var(--accent)}
+.wizard [aria-current="step"] .n{background:var(--accent);color:#fff}
+.wizard .done .n{background:var(--ok);color:#fff}
+.progress{height:6px;background:var(--line);border-radius:3px;margin-bottom:22px;overflow:hidden}
+.progress span{display:block;height:100%;background:var(--accent);border-radius:3px;transition:width .3s}
+.step-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:24px;display:flex;flex-direction:column;gap:18px}
+.step-card h3{font-size:24px}
+.form3{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg label{cursor:pointer}
+.seg input{position:absolute;opacity:0}
+.seg span{display:inline-flex;padding:10px 18px;border:2px solid var(--line);border-radius:999px;font-weight:700;background:var(--surface)}
+.seg input:checked+span{background:var(--accent);border-color:var(--accent);color:#fff}
+.seg input:focus-visible+span{outline:3px solid var(--coral);outline-offset:2px}
+.step-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.picklist{display:flex;flex-direction:column;gap:10px}
+.pick{display:grid;grid-template-columns:8px 1fr auto;gap:14px;align-items:center;background:var(--surface);border:2px solid var(--line);border-radius:var(--r-md);padding:12px 14px 12px 0;overflow:hidden}
+.pick.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 6%,var(--surface))}
+.pick .bar{align-self:stretch;border-radius:0 6px 6px 0}
+.pick h4{font-size:18px}
+.pick .meta{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:14px;color:var(--muted);margin-top:4px}
+.pick .meta span{display:inline-flex;gap:5px;align-items:center}
+.pick .meta svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
+.pick .near{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ok)}
+.pick .acts{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.pick a.src{font-size:13px;font-weight:700}
+.sticky-count{position:sticky;bottom:12px;z-index:5;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--navy);color:#fff;border-radius:999px;padding:10px 12px 10px 22px;box-shadow:0 14px 30px -10px rgba(0,0,0,.4)}
+.sticky-count b{font-size:16px}
+.sticky-count .btn.primary{box-shadow:none}
+.filt{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.filt .lab{font-weight:800;font-size:13px;margin-right:4px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.mat .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}
+.org4{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.check-list{display:flex;flex-direction:column;gap:8px}
+.check-list label{display:flex;gap:10px;align-items:flex-start;font-size:15px;cursor:pointer}
+.check-list input{width:20px;height:20px;accent-color:var(--accent);margin-top:2px;flex:none}
+.count-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.summary div{background:var(--soft-lav);border-radius:16px;padding:14px}
+.summary b{display:block;font:800 30px var(--display);color:var(--accent-text)}
+.summary span{font-size:13px;font-weight:600;color:var(--muted)}
+.ticks,.crosses{display:flex;flex-direction:column;gap:8px;padding-left:0;list-style:none;margin:0}
+.ticks li,.crosses li{position:relative;padding-left:28px;font-size:15px;line-height:1.45}
+.ticks li::before,.crosses li::before{position:absolute;left:0;top:0;width:20px;height:20px;border-radius:50%;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center}
+.ticks li::before{content:"✓";background:color-mix(in srgb,var(--ok) 22%,transparent);color:var(--ok)}
+.crosses li::before{content:"✕";background:color-mix(in srgb,var(--bad) 18%,transparent);color:var(--bad)}
+.isnot{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.free-box{background:var(--soft-yellow);border-color:transparent}
+.page-hero .ph-title{font-size:clamp(30px,4.6vw,50px);font-weight:800;margin-top:10px;line-height:1.05}
+.linkbtn{background:none;border:0;padding:0;font:inherit;color:var(--accent-text);font-weight:700;text-decoration:underline;cursor:pointer}
+/* student page */
+.cp-head{text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center;margin-bottom:22px}
+.cp-head h1{font-size:clamp(30px,7vw,44px)}
+.cp-item{background:var(--surface);border:1px solid var(--line);border-left:8px solid var(--accent);border-radius:16px;padding:14px 16px;margin-bottom:10px}
+.cp-item h3{font-size:19px}
+.cp-item p{font-size:14px;color:var(--muted);margin-top:4px}
+.cp-item a{font-weight:700;font-size:14px}
+.cp-end{background:var(--navy);color:#fff;border-radius:22px;padding:26px;text-align:center;margin-top:20px}
+.cp-end b{font:800 26px var(--display);display:block;color:#FFE58A}
+.cp-end p{color:#CFCBE6;margin-top:8px}
+/* paper sheets (preview + print) */
+.sheet-wrap{background:#E9E6F2;border-radius:14px;padding:14px;overflow:auto;max-height:62vh}
+.sheet{background:#fff;color:#25243A;width:794px;min-height:1123px;padding:48px 52px;margin:0 auto;font-family:var(--body);font-size:14px;line-height:1.4;box-shadow:0 8px 24px -10px rgba(0,0,0,.3);position:relative}
+.sheet-scale{transform-origin:top left}
+.sheet h1{font:800 40px var(--display);color:#25243A;line-height:1.05}
+.sheet h2{font:800 22px var(--display);color:#25243A}
+.sheet .s-brand{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #25243A;padding-bottom:10px;margin-bottom:20px;font:800 18px var(--display)}
+.sheet .s-brand span{font:600 13px var(--body);color:#66627E}
+.sheet .s-sub{font-size:16px;color:#4A4760;margin:8px 0 22px}
+.s-tiles{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.s-tile{border:2px solid #25243A;border-radius:14px;padding:14px 14px 14px 16px;display:flex;gap:12px;break-inside:avoid}
+.s-tile .ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none}
+.s-tile .ic svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:2}
+.s-tile b{display:block;font:800 17px var(--display);line-height:1.15}
+.s-tile p{font-size:13px;color:#4A4760;margin-top:4px}
+.s-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-top:26px;border-top:2px dashed #C9C3DD;padding-top:16px}
+.s-foot .big{font:800 26px var(--display);color:#C2412F}
+.s-qr{display:flex;gap:10px;align-items:center;font-size:12px;color:#66627E;max-width:260px}
+.s-qr img{width:96px;height:96px}
+.s-int{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.s-int .blk{border:2px solid #25243A;border-radius:12px;padding:12px;break-inside:avoid}
+.s-int .blk b{font:800 15px var(--display)}
+.s-int .blk small{display:block;color:#66627E;font-size:12px;margin-bottom:6px}
+.s-line{display:flex;align-items:flex-end;gap:8px;height:28px;border-bottom:1px solid #9A95B3}
+.s-line .bx{margin-left:auto;width:16px;height:16px;border:1.5px solid #25243A;border-radius:3px;margin-bottom:4px}
+.s-legend{display:flex;justify-content:flex-end;font-size:12px;color:#66627E;margin-bottom:6px;gap:6px;align-items:center}
+.s-legend .bx{width:14px;height:14px;border:1.5px solid #25243A;border-radius:3px}
+.s-letter p{margin-bottom:10px;font-size:14px}
+.s-acts{display:flex;flex-direction:column;gap:8px;margin:10px 0 14px}
+.s-act{display:grid;grid-template-columns:1fr 74px;gap:12px;border:1px solid #D5D0E6;border-radius:10px;padding:8px 10px;align-items:center;break-inside:avoid}
+.s-act b{font-size:14px}
+.s-act span{display:block;font-size:12px;color:#4A4760;overflow-wrap:anywhere}
+.s-act img{width:74px;height:74px}
+.s-cut{border-top:2px dashed #25243A;margin-top:18px;padding-top:14px;position:relative;break-inside:avoid}
+.s-cut::before{content:"✂ cut here";position:absolute;top:-11px;left:0;background:#fff;padding-right:8px;font-size:12px;color:#66627E}
+.s-fill{display:inline-block;border-bottom:1px solid #25243A;min-width:180px;height:18px;vertical-align:bottom}
+.s-goal{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin:20px 0}
+.s-goal div{aspect-ratio:1;border:3px dashed #7655E8;border-radius:50%;display:flex;align-items:center;justify-content:center;font:800 22px var(--display);color:#C9BEF5}
+.s-ch-acts{display:flex;flex-direction:column;gap:8px}
+.s-ch-acts div{display:flex;gap:10px;align-items:center;border-bottom:1px solid #E2DDF0;padding-bottom:8px}
+.s-ch-acts i{width:12px;height:12px;border-radius:50%}
+.s-ch-acts .boxes{margin-left:auto;display:flex;gap:6px}
+.s-ch-acts .boxes span{width:22px;height:22px;border:1.5px solid #25243A;border-radius:50%}
+#printArea{display:none}
+dialog.wide{width:min(980px,calc(100vw - 24px))}
+.student .nav,.student .tabbar,.student .top .right,.student footer{display:none!important}
+@media print{
+  body.printing > *:not(#printArea){display:none!important}
+  body.printing{background:#fff}
+  body.printing #printArea{display:block}
+  body.printing .sheet{box-shadow:none;width:auto;min-height:0;padding:0;margin:0}
+  @page{size:A4;margin:14mm}
+}
+.tabbar nav{grid-template-columns:repeat(4,1fr)!important}
+@media (max-width:1000px){.roles,.mats{grid-template-columns:1fr 1fr}.wizard{grid-template-columns:1fr 1fr}}
+@media (max-width:760px){.hero .wrap{grid-template-columns:1fr}.board-ill{margin:10px 18px 40px;max-width:360px}.bi-paper{right:-10px}.form3,.org4,.count-grid,.isnot{grid-template-columns:1fr}.pick{grid-template-columns:8px 1fr}.pick .acts{grid-column:2;flex-direction:row;align-items:center;justify-content:space-between;width:100%}.summary{grid-template-columns:1fr 1fr 1fr}.sticky-count{border-radius:20px}}
+@media (max-width:480px){.roles,.mats{grid-template-columns:1fr}.wizard small{display:none}.summary b{font-size:24px}.logo-sub{display:none}}
+
+</style>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0} img{max-width:100%} [hidden]{display:none!important}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#home" aria-label="CONNECT for schools, home">
+      <svg class="mark" viewBox="0 0 40 40" aria-hidden="true"><circle cx="15" cy="20" r="11" fill="#7655E8"/><circle cx="25" cy="20" r="11" fill="#FF796D" style="mix-blend-mode:multiply"/><circle cx="20" cy="20" r="3.5" fill="#FFE58A"/></svg>
+      CONNECT <span class="logo-sub">for schools</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="#how" data-nav="home">How it works</a><a href="#plan" data-nav="plan">Plan activities</a><a href="#families" data-nav="families">For families</a><a href="#about" data-nav="about">About</a>
+    </nav>
+    <div class="right"><a class="btn primary small" href="#plan">Start planning</a></div>
+  </div>
+</header>
+
+<main id="main">
+<!-- HOME -->
+<div class="view" data-view="home">
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <div class="eyebrow">For schools in Barcelona · students aged 12–18</div>
+        <h1 style="margin-top:12px">Get your students out into <em>the neighbourhood.</em></h1>
+        <p class="sub">CONNECT helps schools find free activities near them and turn them into real plans for their students, with less screen time, not more.</p>
+        <div class="ctas"><a class="btn primary" href="#plan">Start planning</a><a class="btn line" href="#how">How it works</a></div>
+        <p class="key-line"><svg viewBox="0 0 24 24" data-icon="screen"></svg> Teachers use the screen. <b>Students live the activity.</b></p>
+      </div>
+      <div class="board-ill" aria-hidden="true">
+        <div class="pin-dot"></div>
+        <div class="bi-head"><b>Our class plan</b><span>2nd ESO B · Gràcia</span></div>
+        <div class="bi-row"><i style="background:#FF796D"></i><div><b>Open playground</b><span>Saturdays · Free</span></div><span class="bi-st">●</span></div>
+        <div class="bi-row"><i style="background:#7655E8"></i><div><b>Youth centre music room</b><span>Tue &amp; Thu after school</span></div><span class="bi-st">●●</span></div>
+        <div class="bi-row"><i style="background:#D9579F"></i><div><b>Museum Sunday</b><span>Sundays from 15:00 · Free</span></div><span class="bi-st"></span></div>
+        <div class="bi-foot">Interested? Tell your tutor.</div>
+        <div class="bi-paper"><b>Interest sheet</b><span>Marta ✓</span><span>Joel</span><span>Aya ✓</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="how"><div class="wrap">
+    <div class="sec-head"><div><div class="eyebrow">How it works</div><h2>Four steps for the tutor</h2><p class="muted" style="margin-top:8px;max-width:62ch">About 20 minutes once a term. Students don’t need an app, an account or a phone to take part.</p></div></div>
+    <div class="steps" id="howSteps"></div>
+  </div></section>
+
+  <section class="block" style="background:var(--soft-lav)"><div class="wrap">
+    <div class="sec-head"><div><div class="eyebrow">Less screen time, by design</div><h2>Who does what</h2></div></div>
+    <div class="roles">
+      <div class="role"><div class="role-ic" style="background:var(--accent)"><svg viewBox="0 0 24 24" data-icon="screen"></svg></div><h3>The tutor</h3><p class="muted">Uses CONNECT for a few minutes: chooses activities near the school, prints the materials and forms groups.</p></div>
+      <div class="role"><div class="role-ic" style="background:var(--coral)"><svg viewBox="0 0 24 24" data-icon="walk"></svg></div><h3>Students</h3><p class="muted">See the board in class, sign up on paper and go to the activity together. No app, no account.</p></div>
+      <div class="role"><div class="role-ic" style="background:#2E9E6A"><svg viewBox="0 0 24 24" data-icon="users"></svg></div><h3>Families</h3><p class="muted">Get a letter from the school and register on the organiser’s official page when needed.</p></div>
+      <div class="role"><div class="role-ic" style="background:#3F8FE0"><svg viewBox="0 0 24 24" data-icon="org"></svg></div><h3>Organisers</h3><p class="muted">Keep running their activities and registrations. CONNECT only points to their official page.</p></div>
+    </div>
+  </div></section>
+
+  <section class="block"><div class="wrap">
+    <div class="sec-head"><div><div class="eyebrow">What you get</div><h2>Ready-to-print materials</h2></div></div>
+    <div class="mats" id="matsHome"></div>
+  </div></section>
+
+  <section class="block"><div class="wrap">
+    <div class="cta-big">
+      <h2>Plan your class’s first activities</h2>
+      <p>Free for schools. Real activities from official sources.</p>
+      <a class="btn" href="#plan">Start planning</a>
+    </div>
+  </div></section>
+</div>
+
+<!-- PLAN -->
+<div class="view" data-view="plan">
+  <section class="block"><div class="wrap">
+    <div class="sec-head"><div><div class="eyebrow">Planner for tutors</div><h2>Plan activities for your class</h2></div><button class="btn line small" type="button" id="newPlan">Start a new plan</button></div>
+    <ol class="wizard" id="wizard" aria-label="Steps"></ol>
+    <div class="progress" aria-hidden="true"><span id="progBar"></span></div>
+    <div id="stepBody"></div>
+  </div></section>
+</div>
+
+<!-- FAMILIES -->
+<div class="view" data-view="families">
+  <section class="block page-hero"><div class="wrap two">
+    <div><div class="eyebrow">For families</div><h2 class="ph-title">The school brings the activities. Your child lives them.</h2></div>
+    <div class="prose">
+      <p>CONNECT is a tool for teachers. The tutor chooses free and low-cost activities near the school, puts them on a board in class and sends you a letter with the details.</p>
+      <p>Your child doesn’t need an app or an account: they sign up on a paper sheet in class if they’re interested, and can go with classmates.</p>
+    </div>
+  </div></section>
+  <section class="block"><div class="wrap">
+    <div class="sec-head"><div><div class="eyebrow">Privacy</div><h2>What CONNECT does and doesn’t do</h2></div></div>
+    <div class="safety" id="safety"></div>
+  </div></section>
+  <section class="block" style="background:var(--soft-lav)"><div class="wrap two">
+    <div class="box"><h3>Registration and payments</h3><p class="muted">Registration, permissions and payments (if any) are always handled by the official organiser of each activity. The letter from the school includes the official link for each one.</p></div>
+    <div class="box"><h3>First visit as a group</h3><p class="muted">The school may organise a first visit to an activity as a group, accompanied by a teacher or educator, so nobody has to go alone the first time. For this, the school will ask you to sign the authorisation at the bottom of the letter.</p></div>
+  </div></section>
+</div>
+
+<!-- ABOUT -->
+<div class="view" data-view="about">
+  <section class="block page-hero"><div class="wrap two">
+    <div><div class="eyebrow">About CONNECT</div><h2 class="ph-title">Less scrolling. More neighbourhood.</h2></div>
+    <div class="prose">
+      <p>Young people spend a lot of time on screens and social media. Meanwhile, Barcelona has hundreds of free activities for them, but the information is scattered and many teens never hear about it.</p>
+      <p><strong>Our approach: schools as the bridge.</strong> Instead of another app for teenagers, CONNECT is a tool that helps tutors bring the activities that already exist in the neighbourhood to their class, on paper and in person.</p>
+    </div>
+  </div></section>
+  <section class="block"><div class="wrap">
+    <div class="isnot">
+      <div class="box"><div class="eyebrow">CONNECT does</div><ul class="ticks"><li>Gather free and low-cost activities from official sources</li><li>Help tutors choose the ones near their school</li><li>Create printable materials for class and families</li><li>Help students go together, organised by the school</li></ul></div>
+      <div class="box"><div class="eyebrow" style="color:var(--bad)">CONNECT doesn’t</div><ul class="crosses"><li>Create or run activities</li><li>Manage registrations or payments</li><li>Ask students to download an app or create an account</li><li>Work as a social network: no profiles, no chats</li></ul></div>
+    </div>
+  </div></section>
+  <section class="block"><div class="wrap two">
+    <div class="box free-box"><div class="eyebrow">Always free</div><h3>Free for students and schools</h3><p class="muted">No cost, no advertising, no sign-up.</p></div>
+    <div class="box"><div class="eyebrow">Get in touch</div><h3>Pilot schools and organisers</h3><p class="muted">Want to try CONNECT in your school, or run an activity that’s missing?</p><button class="btn primary" type="button" data-mailteam style="align-self:flex-start">Email the CONNECT team</button></div>
+  </div></section>
+  <section class="block"><div class="wrap">
+    <div class="sec-head"><div><div class="eyebrow">Where activities come from</div><h2>Official sources</h2><p class="muted" style="margin-top:8px;max-width:65ch">Listing a source does not mean it endorses CONNECT.</p></div></div>
+    <div class="orgs" id="orgs"></div>
+  </div></section>
+</div>
+
+<!-- ADMIN -->
+<div class="view" data-view="admin">
+  <section class="block"><div class="wrap">
+    <div class="sec-head"><div><div class="eyebrow">CONNECT team only</div><h2>Activity database</h2></div><button class="btn primary" id="addAct" type="button">+ Add activity</button></div>
+    <div class="demo-banner" style="margin-bottom:18px"><b>Demo</b><span>Changes are saved in this browser only. A live version needs a secure team login and a shared database.</span></div>
+    <div class="kpis" id="kpis"></div>
+    <div class="chips" id="adminFilter" role="group" aria-label="Show" style="margin-bottom:12px"></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Activity</th><th>District</th><th>Status</th><th>Ends</th><th>Last verified</th><th>Actions</th></tr></thead><tbody id="adminRows"></tbody></table></div>
+  </div></section>
+</div>
+</main>
+
+<footer><div class="wrap">
+  <div><b style="font-family:var(--display);color:var(--ink)">CONNECT</b> · A tool for schools to get students out into the neighbourhood.<br>Activity information comes from official Barcelona sources.</div>
+  <nav aria-label="Footer"><a href="#how">How it works</a><a href="#plan">Plan activities</a><a href="#families">For families</a><a href="#about">About</a><a href="#admin">Team</a></nav>
+</div></footer>
+
+<div class="tabbar"><nav aria-label="Tabs">
+  <a href="#home" data-nav="home"><svg viewBox="0 0 24 24" data-icon="home"></svg>Home</a>
+  <a href="#plan" data-nav="plan"><svg viewBox="0 0 24 24" data-icon="list"></svg>Plan</a>
+  <a href="#families" data-nav="families"><svg viewBox="0 0 24 24" data-icon="users"></svg>Families</a>
+  <a href="#about" data-nav="about"><svg viewBox="0 0 24 24" data-icon="info"></svg>About</a>
+</nav></div>
+
+<dialog id="dlg"><button class="dlg-x" type="button" data-close aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div id="dlgContent"></div></dialog>
+<div class="toast" id="toast" role="status"></div>
+<div id="printArea" aria-hidden="true"></div>
+
+<script>/* qrcode-generator 1.4.4 · MIT · Kazuhiko Arase */
+var qrcode = function() {
+  var qrcode = function(typeNumber, errorCorrectionLevel) {
+    var PAD0 = 0xEC;
+    var PAD1 = 0x11;
+    var _typeNumber = typeNumber;
+    var _errorCorrectionLevel = QRErrorCorrectionLevel[errorCorrectionLevel];
+    var _modules = null;
+    var _moduleCount = 0;
+    var _dataCache = null;
+    var _dataList = [];
+    var _this = {};
+    var makeImpl = function(test, maskPattern) {
+      _moduleCount = _typeNumber * 4 + 17;
+      _modules = function(moduleCount) {
+        var modules = new Array(moduleCount);
+        for (var row = 0; row < moduleCount; row += 1) {
+          modules[row] = new Array(moduleCount);
+          for (var col = 0; col < moduleCount; col += 1) {
+            modules[row][col] = null;
+          }
+        }
+        return modules;
+      }(_moduleCount);
+      setupPositionProbePattern(0, 0);
+      setupPositionProbePattern(_moduleCount - 7, 0);
+      setupPositionProbePattern(0, _moduleCount - 7);
+      setupPositionAdjustPattern();
+      setupTimingPattern();
+      setupTypeInfo(test, maskPattern);
+      if (_typeNumber >= 7) {
+        setupTypeNumber(test);
+      }
+      if (_dataCache == null) {
+        _dataCache = createData(_typeNumber, _errorCorrectionLevel, _dataList);
+      }
+      mapData(_dataCache, maskPattern);
+    };
+    var setupPositionProbePattern = function(row, col) {
+      for (var r = -1; r <= 7; r += 1) {
+        if (row + r <= -1 || _moduleCount <= row + r) continue;
+        for (var c = -1; c <= 7; c += 1) {
+          if (col + c <= -1 || _moduleCount <= col + c) continue;
+          if ( (0 <= r && r <= 6 && (c == 0 || c == 6) )
+              || (0 <= c && c <= 6 && (r == 0 || r == 6) )
+              || (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
+            _modules[row + r][col + c] = true;
+          } else {
+            _modules[row + r][col + c] = false;
+          }
+        }
+      }
+    };
+    var getBestMaskPattern = function() {
+      var minLostPoint = 0;
+      var pattern = 0;
+      for (var i = 0; i < 8; i += 1) {
+        makeImpl(true, i);
+        var lostPoint = QRUtil.getLostPoint(_this);
+        if (i == 0 || minLostPoint > lostPoint) {
+          minLostPoint = lostPoint;
+          pattern = i;
+        }
+      }
+      return pattern;
+    };
+    var setupTimingPattern = function() {
+      for (var r = 8; r < _moduleCount - 8; r += 1) {
+        if (_modules[r][6] != null) {
+          continue;
+        }
+        _modules[r][6] = (r % 2 == 0);
+      }
+      for (var c = 8; c < _moduleCount - 8; c += 1) {
+        if (_modules[6][c] != null) {
+          continue;
+        }
+        _modules[6][c] = (c % 2 == 0);
+      }
+    };
+    var setupPositionAdjustPattern = function() {
+      var pos = QRUtil.getPatternPosition(_typeNumber);
+      for (var i = 0; i < pos.length; i += 1) {
+        for (var j = 0; j < pos.length; j += 1) {
+          var row = pos[i];
+          var col = pos[j];
+          if (_modules[row][col] != null) {
+            continue;
+          }
+          for (var r = -2; r <= 2; r += 1) {
+            for (var c = -2; c <= 2; c += 1) {
+              if (r == -2 || r == 2 || c == -2 || c == 2
+                  || (r == 0 && c == 0) ) {
+                _modules[row + r][col + c] = true;
+              } else {
+                _modules[row + r][col + c] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+    var setupTypeNumber = function(test) {
+      var bits = QRUtil.getBCHTypeNumber(_typeNumber);
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[Math.floor(i / 3)][i % 3 + _moduleCount - 8 - 3] = mod;
+      }
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[i % 3 + _moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
+      }
+    };
+    var setupTypeInfo = function(test, maskPattern) {
+      var data = (_errorCorrectionLevel << 3) | maskPattern;
+      var bits = QRUtil.getBCHTypeInfo(data);
+      for (var i = 0; i < 15; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        if (i < 6) {
+          _modules[i][8] = mod;
+        } else if (i < 8) {
+          _modules[i + 1][8] = mod;
+        } else {
+          _modules[_moduleCount - 15 + i][8] = mod;
+        }
+      }
+      for (var i = 0; i < 15; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        if (i < 8) {
+          _modules[8][_moduleCount - i - 1] = mod;
+        } else if (i < 9) {
+          _modules[8][15 - i - 1 + 1] = mod;
+        } else {
+          _modules[8][15 - i - 1] = mod;
+        }
+      }
+      _modules[_moduleCount - 8][8] = (!test);
+    };
+    var mapData = function(data, maskPattern) {
+      var inc = -1;
+      var row = _moduleCount - 1;
+      var bitIndex = 7;
+      var byteIndex = 0;
+      var maskFunc = QRUtil.getMaskFunction(maskPattern);
+      for (var col = _moduleCount - 1; col > 0; col -= 2) {
+        if (col == 6) col -= 1;
+        while (true) {
+          for (var c = 0; c < 2; c += 1) {
+            if (_modules[row][col - c] == null) {
+              var dark = false;
+              if (byteIndex < data.length) {
+                dark = ( ( (data[byteIndex] >>> bitIndex) & 1) == 1);
+              }
+              var mask = maskFunc(row, col - c);
+              if (mask) {
+                dark = !dark;
+              }
+              _modules[row][col - c] = dark;
+              bitIndex -= 1;
+              if (bitIndex == -1) {
+                byteIndex += 1;
+                bitIndex = 7;
+              }
+            }
+          }
+          row += inc;
+          if (row < 0 || _moduleCount <= row) {
+            row -= inc;
+            inc = -inc;
+            break;
+          }
+        }
+      }
+    };
+    var createBytes = function(buffer, rsBlocks) {
+      var offset = 0;
+      var maxDcCount = 0;
+      var maxEcCount = 0;
+      var dcdata = new Array(rsBlocks.length);
+      var ecdata = new Array(rsBlocks.length);
+      for (var r = 0; r < rsBlocks.length; r += 1) {
+        var dcCount = rsBlocks[r].dataCount;
+        var ecCount = rsBlocks[r].totalCount - dcCount;
+        maxDcCount = Math.max(maxDcCount, dcCount);
+        maxEcCount = Math.max(maxEcCount, ecCount);
+        dcdata[r] = new Array(dcCount);
+        for (var i = 0; i < dcdata[r].length; i += 1) {
+          dcdata[r][i] = 0xff & buffer.getBuffer()[i + offset];
+        }
+        offset += dcCount;
+        var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+        var rawPoly = qrPolynomial(dcdata[r], rsPoly.getLength() - 1);
+        var modPoly = rawPoly.mod(rsPoly);
+        ecdata[r] = new Array(rsPoly.getLength() - 1);
+        for (var i = 0; i < ecdata[r].length; i += 1) {
+          var modIndex = i + modPoly.getLength() - ecdata[r].length;
+          ecdata[r][i] = (modIndex >= 0)? modPoly.getAt(modIndex) : 0;
+        }
+      }
+      var totalCodeCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalCodeCount += rsBlocks[i].totalCount;
+      }
+      var data = new Array(totalCodeCount);
+      var index = 0;
+      for (var i = 0; i < maxDcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < dcdata[r].length) {
+            data[index] = dcdata[r][i];
+            index += 1;
+          }
+        }
+      }
+      for (var i = 0; i < maxEcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < ecdata[r].length) {
+            data[index] = ecdata[r][i];
+            index += 1;
+          }
+        }
+      }
+      return data;
+    };
+    var createData = function(typeNumber, errorCorrectionLevel, dataList) {
+      var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectionLevel);
+      var buffer = qrBitBuffer();
+      for (var i = 0; i < dataList.length; i += 1) {
+        var data = dataList[i];
+        buffer.put(data.getMode(), 4);
+        buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+        data.write(buffer);
+      }
+      var totalDataCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalDataCount += rsBlocks[i].dataCount;
+      }
+      if (buffer.getLengthInBits() > totalDataCount * 8) {
+        throw 'code length overflow. ('
+          + buffer.getLengthInBits()
+          + '>'
+          + totalDataCount * 8
+          + ')';
+      }
+      if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
+        buffer.put(0, 4);
+      }
+      while (buffer.getLengthInBits() % 8 != 0) {
+        buffer.putBit(false);
+      }
+      while (true) {
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD0, 8);
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD1, 8);
+      }
+      return createBytes(buffer, rsBlocks);
+    };
+    _this.addData = function(data, mode) {
+      mode = mode || 'Byte';
+      var newData = null;
+      switch(mode) {
+      case 'Numeric' :
+        newData = qrNumber(data);
+        break;
+      case 'Alphanumeric' :
+        newData = qrAlphaNum(data);
+        break;
+      case 'Byte' :
+        newData = qr8BitByte(data);
+        break;
+      case 'Kanji' :
+        newData = qrKanji(data);
+        break;
+      default :
+        throw 'mode:' + mode;
+      }
+      _dataList.push(newData);
+      _dataCache = null;
+    };
+    _this.isDark = function(row, col) {
+      if (row < 0 || _moduleCount <= row || col < 0 || _moduleCount <= col) {
+        throw row + ',' + col;
+      }
+      return _modules[row][col];
+    };
+    _this.getModuleCount = function() {
+      return _moduleCount;
+    };
+    _this.make = function() {
+      if (_typeNumber < 1) {
+        var typeNumber = 1;
+        for (; typeNumber < 40; typeNumber++) {
+          var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, _errorCorrectionLevel);
+          var buffer = qrBitBuffer();
+          for (var i = 0; i < _dataList.length; i++) {
+            var data = _dataList[i];
+            buffer.put(data.getMode(), 4);
+            buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+            data.write(buffer);
+          }
+          var totalDataCount = 0;
+          for (var i = 0; i < rsBlocks.length; i++) {
+            totalDataCount += rsBlocks[i].dataCount;
+          }
+          if (buffer.getLengthInBits() <= totalDataCount * 8) {
+            break;
+          }
+        }
+        _typeNumber = typeNumber;
+      }
+      makeImpl(false, getBestMaskPattern() );
+    };
+    _this.createTableTag = function(cellSize, margin) {
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+      var qrHtml = '';
+      qrHtml += '<table style="';
+      qrHtml += ' border-width: 0px; border-style: none;';
+      qrHtml += ' border-collapse: collapse;';
+      qrHtml += ' padding: 0px; margin: ' + margin + 'px;';
+      qrHtml += '">';
+      qrHtml += '<tbody>';
+      for (var r = 0; r < _this.getModuleCount(); r += 1) {
+        qrHtml += '<tr>';
+        for (var c = 0; c < _this.getModuleCount(); c += 1) {
+          qrHtml += '<td style="';
+          qrHtml += ' border-width: 0px; border-style: none;';
+          qrHtml += ' border-collapse: collapse;';
+          qrHtml += ' padding: 0px; margin: 0px;';
+          qrHtml += ' width: ' + cellSize + 'px;';
+          qrHtml += ' height: ' + cellSize + 'px;';
+          qrHtml += ' background-color: ';
+          qrHtml += _this.isDark(r, c)? '#000000' : '#ffffff';
+          qrHtml += ';';
+          qrHtml += '"/>';
+        }
+        qrHtml += '</tr>';
+      }
+      qrHtml += '</tbody>';
+      qrHtml += '</table>';
+      return qrHtml;
+    };
+    _this.createSvgTag = function(cellSize, margin, alt, title) {
+      var opts = {};
+      if (typeof arguments[0] == 'object') {
+        opts = arguments[0];
+        cellSize = opts.cellSize;
+        margin = opts.margin;
+        alt = opts.alt;
+        title = opts.title;
+      }
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+      alt = (typeof alt === 'string') ? {text: alt} : alt || {};
+      alt.text = alt.text || null;
+      alt.id = (alt.text) ? alt.id || 'qrcode-description' : null;
+      title = (typeof title === 'string') ? {text: title} : title || {};
+      title.text = title.text || null;
+      title.id = (title.text) ? title.id || 'qrcode-title' : null;
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var c, mc, r, mr, qrSvg='', rect;
+      rect = 'l' + cellSize + ',0 0,' + cellSize +
+        ' -' + cellSize + ',0 0,-' + cellSize + 'z ';
+      qrSvg += '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"';
+      qrSvg += !opts.scalable ? ' width="' + size + 'px" height="' + size + 'px"' : '';
+      qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" ';
+      qrSvg += ' preserveAspectRatio="xMinYMin meet"';
+      qrSvg += (title.text || alt.text) ? ' role="img" aria-labelledby="' +
+          escapeXml([title.id, alt.id].join(' ').trim() ) + '"' : '';
+      qrSvg += '>';
+      qrSvg += (title.text) ? '<title id="' + escapeXml(title.id) + '">' +
+          escapeXml(title.text) + '</title>' : '';
+      qrSvg += (alt.text) ? '<description id="' + escapeXml(alt.id) + '">' +
+          escapeXml(alt.text) + '</description>' : '';
+      qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>';
+      qrSvg += '<path d="';
+      for (r = 0; r < _this.getModuleCount(); r += 1) {
+        mr = r * cellSize + margin;
+        for (c = 0; c < _this.getModuleCount(); c += 1) {
+          if (_this.isDark(r, c) ) {
+            mc = c*cellSize+margin;
+            qrSvg += 'M' + mc + ',' + mr + rect;
+          }
+        }
+      }
+      qrSvg += '" stroke="transparent" fill="black"/>';
+      qrSvg += '</svg>';
+      return qrSvg;
+    };
+    _this.createDataURL = function(cellSize, margin) {
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+      return createDataURL(size, size, function(x, y) {
+        if (min <= x && x < max && min <= y && y < max) {
+          var c = Math.floor( (x - min) / cellSize);
+          var r = Math.floor( (y - min) / cellSize);
+          return _this.isDark(r, c)? 0 : 1;
+        } else {
+          return 1;
+        }
+      } );
+    };
+    _this.createImgTag = function(cellSize, margin, alt) {
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var img = '';
+      img += '<img';
+      img += '\u0020src="';
+      img += _this.createDataURL(cellSize, margin);
+      img += '"';
+      img += '\u0020width="';
+      img += size;
+      img += '"';
+      img += '\u0020height="';
+      img += size;
+      img += '"';
+      if (alt) {
+        img += '\u0020alt="';
+        img += escapeXml(alt);
+        img += '"';
+      }
+      img += '/>';
+      return img;
+    };
+    var escapeXml = function(s) {
+      var escaped = '';
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charAt(i);
+        switch(c) {
+        case '<': escaped += '&lt;'; break;
+        case '>': escaped += '&gt;'; break;
+        case '&': escaped += '&amp;'; break;
+        case '"': escaped += '&quot;'; break;
+        default : escaped += c; break;
+        }
+      }
+      return escaped;
+    };
+    var _createHalfASCII = function(margin) {
+      var cellSize = 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+      var y, x, r1, r2, p;
+      var blocks = {
+        '██': '█',
+        '█ ': '▀',
+        ' █': '▄',
+        '  ': ' '
+      };
+      var blocksLastLineNoMargin = {
+        '██': '▀',
+        '█ ': '▀',
+        ' █': ' ',
+        '  ': ' '
+      };
+      var ascii = '';
+      for (y = 0; y < size; y += 2) {
+        r1 = Math.floor((y - min) / cellSize);
+        r2 = Math.floor((y + 1 - min) / cellSize);
+        for (x = 0; x < size; x += 1) {
+          p = '█';
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r1, Math.floor((x - min) / cellSize))) {
+            p = ' ';
+          }
+          if (min <= x && x < max && min <= y+1 && y+1 < max && _this.isDark(r2, Math.floor((x - min) / cellSize))) {
+            p += ' ';
+          }
+          else {
+            p += '█';
+          }
+          ascii += (margin < 1 && y+1 >= max) ? blocksLastLineNoMargin[p] : blocks[p];
+        }
+        ascii += '\n';
+      }
+      if (size % 2 && margin > 0) {
+        return ascii.substring(0, ascii.length - size - 1) + Array(size+1).join('▀');
+      }
+      return ascii.substring(0, ascii.length-1);
+    };
+    _this.createASCII = function(cellSize, margin) {
+      cellSize = cellSize || 1;
+      if (cellSize < 2) {
+        return _createHalfASCII(margin);
+      }
+      cellSize -= 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+      var y, x, r, p;
+      var white = Array(cellSize+1).join('██');
+      var black = Array(cellSize+1).join('  ');
+      var ascii = '';
+      var line = '';
+      for (y = 0; y < size; y += 1) {
+        r = Math.floor( (y - min) / cellSize);
+        line = '';
+        for (x = 0; x < size; x += 1) {
+          p = 1;
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r, Math.floor((x - min) / cellSize))) {
+            p = 0;
+          }
+          line += p ? white : black;
+        }
+        for (r = 0; r < cellSize; r += 1) {
+          ascii += line + '\n';
+        }
+      }
+      return ascii.substring(0, ascii.length-1);
+    };
+    _this.renderTo2dContext = function(context, cellSize) {
+      cellSize = cellSize || 2;
+      var length = _this.getModuleCount();
+      for (var row = 0; row < length; row++) {
+        for (var col = 0; col < length; col++) {
+          context.fillStyle = _this.isDark(row, col) ? 'black' : 'white';
+          context.fillRect(row * cellSize, col * cellSize, cellSize, cellSize);
+        }
+      }
+    }
+    return _this;
+  };
+  qrcode.stringToBytesFuncs = {
+    'default' : function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        bytes.push(c & 0xff);
+      }
+      return bytes;
+    }
+  };
+  qrcode.stringToBytes = qrcode.stringToBytesFuncs['default'];
+  qrcode.createStringToBytes = function(unicodeData, numChars) {
+    var unicodeMap = function() {
+      var bin = base64DecodeInputStream(unicodeData);
+      var read = function() {
+        var b = bin.read();
+        if (b == -1) throw 'eof';
+        return b;
+      };
+      var count = 0;
+      var unicodeMap = {};
+      while (true) {
+        var b0 = bin.read();
+        if (b0 == -1) break;
+        var b1 = read();
+        var b2 = read();
+        var b3 = read();
+        var k = String.fromCharCode( (b0 << 8) | b1);
+        var v = (b2 << 8) | b3;
+        unicodeMap[k] = v;
+        count += 1;
+      }
+      if (count != numChars) {
+        throw count + ' != ' + numChars;
+      }
+      return unicodeMap;
+    }();
+    var unknownChar = '?'.charCodeAt(0);
+    return function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        if (c < 128) {
+          bytes.push(c);
+        } else {
+          var b = unicodeMap[s.charAt(i)];
+          if (typeof b == 'number') {
+            if ( (b & 0xff) == b) {
+              bytes.push(b);
+            } else {
+              bytes.push(b >>> 8);
+              bytes.push(b & 0xff);
+            }
+          } else {
+            bytes.push(unknownChar);
+          }
+        }
+      }
+      return bytes;
+    };
+  };
+  var QRMode = {
+    MODE_NUMBER :    1 << 0,
+    MODE_ALPHA_NUM : 1 << 1,
+    MODE_8BIT_BYTE : 1 << 2,
+    MODE_KANJI :     1 << 3
+  };
+  var QRErrorCorrectionLevel = {
+    L : 1,
+    M : 0,
+    Q : 3,
+    H : 2
+  };
+  var QRMaskPattern = {
+    PATTERN000 : 0,
+    PATTERN001 : 1,
+    PATTERN010 : 2,
+    PATTERN011 : 3,
+    PATTERN100 : 4,
+    PATTERN101 : 5,
+    PATTERN110 : 6,
+    PATTERN111 : 7
+  };
+  var QRUtil = function() {
+    var PATTERN_POSITION_TABLE = [
+      [],
+      [6, 18],
+      [6, 22],
+      [6, 26],
+      [6, 30],
+      [6, 34],
+      [6, 22, 38],
+      [6, 24, 42],
+      [6, 26, 46],
+      [6, 28, 50],
+      [6, 30, 54],
+      [6, 32, 58],
+      [6, 34, 62],
+      [6, 26, 46, 66],
+      [6, 26, 48, 70],
+      [6, 26, 50, 74],
+      [6, 30, 54, 78],
+      [6, 30, 56, 82],
+      [6, 30, 58, 86],
+      [6, 34, 62, 90],
+      [6, 28, 50, 72, 94],
+      [6, 26, 50, 74, 98],
+      [6, 30, 54, 78, 102],
+      [6, 28, 54, 80, 106],
+      [6, 32, 58, 84, 110],
+      [6, 30, 58, 86, 114],
+      [6, 34, 62, 90, 118],
+      [6, 26, 50, 74, 98, 122],
+      [6, 30, 54, 78, 102, 126],
+      [6, 26, 52, 78, 104, 130],
+      [6, 30, 56, 82, 108, 134],
+      [6, 34, 60, 86, 112, 138],
+      [6, 30, 58, 86, 114, 142],
+      [6, 34, 62, 90, 118, 146],
+      [6, 30, 54, 78, 102, 126, 150],
+      [6, 24, 50, 76, 102, 128, 154],
+      [6, 28, 54, 80, 106, 132, 158],
+      [6, 32, 58, 84, 110, 136, 162],
+      [6, 26, 54, 82, 110, 138, 166],
+      [6, 30, 58, 86, 114, 142, 170]
+    ];
+    var G15 = (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0);
+    var G18 = (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0);
+    var G15_MASK = (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1);
+    var _this = {};
+    var getBCHDigit = function(data) {
+      var digit = 0;
+      while (data != 0) {
+        digit += 1;
+        data >>>= 1;
+      }
+      return digit;
+    };
+    _this.getBCHTypeInfo = function(data) {
+      var d = data << 10;
+      while (getBCHDigit(d) - getBCHDigit(G15) >= 0) {
+        d ^= (G15 << (getBCHDigit(d) - getBCHDigit(G15) ) );
+      }
+      return ( (data << 10) | d) ^ G15_MASK;
+    };
+    _this.getBCHTypeNumber = function(data) {
+      var d = data << 12;
+      while (getBCHDigit(d) - getBCHDigit(G18) >= 0) {
+        d ^= (G18 << (getBCHDigit(d) - getBCHDigit(G18) ) );
+      }
+      return (data << 12) | d;
+    };
+    _this.getPatternPosition = function(typeNumber) {
+      return PATTERN_POSITION_TABLE[typeNumber - 1];
+    };
+    _this.getMaskFunction = function(maskPattern) {
+      switch (maskPattern) {
+      case QRMaskPattern.PATTERN000 :
+        return function(i, j) { return (i + j) % 2 == 0; };
+      case QRMaskPattern.PATTERN001 :
+        return function(i, j) { return i % 2 == 0; };
+      case QRMaskPattern.PATTERN010 :
+        return function(i, j) { return j % 3 == 0; };
+      case QRMaskPattern.PATTERN011 :
+        return function(i, j) { return (i + j) % 3 == 0; };
+      case QRMaskPattern.PATTERN100 :
+        return function(i, j) { return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 == 0; };
+      case QRMaskPattern.PATTERN101 :
+        return function(i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
+      case QRMaskPattern.PATTERN110 :
+        return function(i, j) { return ( (i * j) % 2 + (i * j) % 3) % 2 == 0; };
+      case QRMaskPattern.PATTERN111 :
+        return function(i, j) { return ( (i * j) % 3 + (i + j) % 2) % 2 == 0; };
+      default :
+        throw 'bad maskPattern:' + maskPattern;
+      }
+    };
+    _this.getErrorCorrectPolynomial = function(errorCorrectLength) {
+      var a = qrPolynomial([1], 0);
+      for (var i = 0; i < errorCorrectLength; i += 1) {
+        a = a.multiply(qrPolynomial([1, QRMath.gexp(i)], 0) );
+      }
+      return a;
+    };
+    _this.getLengthInBits = function(mode, type) {
+      if (1 <= type && type < 10) {
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 10;
+        case QRMode.MODE_ALPHA_NUM : return 9;
+        case QRMode.MODE_8BIT_BYTE : return 8;
+        case QRMode.MODE_KANJI     : return 8;
+        default :
+          throw 'mode:' + mode;
+        }
+      } else if (type < 27) {
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 12;
+        case QRMode.MODE_ALPHA_NUM : return 11;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 10;
+        default :
+          throw 'mode:' + mode;
+        }
+      } else if (type < 41) {
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 14;
+        case QRMode.MODE_ALPHA_NUM : return 13;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 12;
+        default :
+          throw 'mode:' + mode;
+        }
+      } else {
+        throw 'type:' + type;
+      }
+    };
+    _this.getLostPoint = function(qrcode) {
+      var moduleCount = qrcode.getModuleCount();
+      var lostPoint = 0;
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount; col += 1) {
+          var sameCount = 0;
+          var dark = qrcode.isDark(row, col);
+          for (var r = -1; r <= 1; r += 1) {
+            if (row + r < 0 || moduleCount <= row + r) {
+              continue;
+            }
+            for (var c = -1; c <= 1; c += 1) {
+              if (col + c < 0 || moduleCount <= col + c) {
+                continue;
+              }
+              if (r == 0 && c == 0) {
+                continue;
+              }
+              if (dark == qrcode.isDark(row + r, col + c) ) {
+                sameCount += 1;
+              }
+            }
+          }
+          if (sameCount > 5) {
+            lostPoint += (3 + sameCount - 5);
+          }
+        }
+      };
+      for (var row = 0; row < moduleCount - 1; row += 1) {
+        for (var col = 0; col < moduleCount - 1; col += 1) {
+          var count = 0;
+          if (qrcode.isDark(row, col) ) count += 1;
+          if (qrcode.isDark(row + 1, col) ) count += 1;
+          if (qrcode.isDark(row, col + 1) ) count += 1;
+          if (qrcode.isDark(row + 1, col + 1) ) count += 1;
+          if (count == 0 || count == 4) {
+            lostPoint += 3;
+          }
+        }
+      }
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount - 6; col += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row, col + 1)
+              &&  qrcode.isDark(row, col + 2)
+              &&  qrcode.isDark(row, col + 3)
+              &&  qrcode.isDark(row, col + 4)
+              && !qrcode.isDark(row, col + 5)
+              &&  qrcode.isDark(row, col + 6) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount - 6; row += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row + 1, col)
+              &&  qrcode.isDark(row + 2, col)
+              &&  qrcode.isDark(row + 3, col)
+              &&  qrcode.isDark(row + 4, col)
+              && !qrcode.isDark(row + 5, col)
+              &&  qrcode.isDark(row + 6, col) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+      var darkCount = 0;
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount; row += 1) {
+          if (qrcode.isDark(row, col) ) {
+            darkCount += 1;
+          }
+        }
+      }
+      var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
+      lostPoint += ratio * 10;
+      return lostPoint;
+    };
+    return _this;
+  }();
+  var QRMath = function() {
+    var EXP_TABLE = new Array(256);
+    var LOG_TABLE = new Array(256);
+    for (var i = 0; i < 8; i += 1) {
+      EXP_TABLE[i] = 1 << i;
+    }
+    for (var i = 8; i < 256; i += 1) {
+      EXP_TABLE[i] = EXP_TABLE[i - 4]
+        ^ EXP_TABLE[i - 5]
+        ^ EXP_TABLE[i - 6]
+        ^ EXP_TABLE[i - 8];
+    }
+    for (var i = 0; i < 255; i += 1) {
+      LOG_TABLE[EXP_TABLE[i] ] = i;
+    }
+    var _this = {};
+    _this.glog = function(n) {
+      if (n < 1) {
+        throw 'glog(' + n + ')';
+      }
+      return LOG_TABLE[n];
+    };
+    _this.gexp = function(n) {
+      while (n < 0) {
+        n += 255;
+      }
+      while (n >= 256) {
+        n -= 255;
+      }
+      return EXP_TABLE[n];
+    };
+    return _this;
+  }();
+  function qrPolynomial(num, shift) {
+    if (typeof num.length == 'undefined') {
+      throw num.length + '/' + shift;
+    }
+    var _num = function() {
+      var offset = 0;
+      while (offset < num.length && num[offset] == 0) {
+        offset += 1;
+      }
+      var _num = new Array(num.length - offset + shift);
+      for (var i = 0; i < num.length - offset; i += 1) {
+        _num[i] = num[i + offset];
+      }
+      return _num;
+    }();
+    var _this = {};
+    _this.getAt = function(index) {
+      return _num[index];
+    };
+    _this.getLength = function() {
+      return _num.length;
+    };
+    _this.multiply = function(e) {
+      var num = new Array(_this.getLength() + e.getLength() - 1);
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        for (var j = 0; j < e.getLength(); j += 1) {
+          num[i + j] ^= QRMath.gexp(QRMath.glog(_this.getAt(i) ) + QRMath.glog(e.getAt(j) ) );
+        }
+      }
+      return qrPolynomial(num, 0);
+    };
+    _this.mod = function(e) {
+      if (_this.getLength() - e.getLength() < 0) {
+        return _this;
+      }
+      var ratio = QRMath.glog(_this.getAt(0) ) - QRMath.glog(e.getAt(0) );
+      var num = new Array(_this.getLength() );
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        num[i] = _this.getAt(i);
+      }
+      for (var i = 0; i < e.getLength(); i += 1) {
+        num[i] ^= QRMath.gexp(QRMath.glog(e.getAt(i) ) + ratio);
+      }
+      return qrPolynomial(num, 0).mod(e);
+    };
+    return _this;
+  };
+  var QRRSBlock = function() {
+    var RS_BLOCK_TABLE = [
+      [1, 26, 19],
+      [1, 26, 16],
+      [1, 26, 13],
+      [1, 26, 9],
+      [1, 44, 34],
+      [1, 44, 28],
+      [1, 44, 22],
+      [1, 44, 16],
+      [1, 70, 55],
+      [1, 70, 44],
+      [2, 35, 17],
+      [2, 35, 13],
+      [1, 100, 80],
+      [2, 50, 32],
+      [2, 50, 24],
+      [4, 25, 9],
+      [1, 134, 108],
+      [2, 67, 43],
+      [2, 33, 15, 2, 34, 16],
+      [2, 33, 11, 2, 34, 12],
+      [2, 86, 68],
+      [4, 43, 27],
+      [4, 43, 19],
+      [4, 43, 15],
+      [2, 98, 78],
+      [4, 49, 31],
+      [2, 32, 14, 4, 33, 15],
+      [4, 39, 13, 1, 40, 14],
+      [2, 121, 97],
+      [2, 60, 38, 2, 61, 39],
+      [4, 40, 18, 2, 41, 19],
+      [4, 40, 14, 2, 41, 15],
+      [2, 146, 116],
+      [3, 58, 36, 2, 59, 37],
+      [4, 36, 16, 4, 37, 17],
+      [4, 36, 12, 4, 37, 13],
+      [2, 86, 68, 2, 87, 69],
+      [4, 69, 43, 1, 70, 44],
+      [6, 43, 19, 2, 44, 20],
+      [6, 43, 15, 2, 44, 16],
+      [4, 101, 81],
+      [1, 80, 50, 4, 81, 51],
+      [4, 50, 22, 4, 51, 23],
+      [3, 36, 12, 8, 37, 13],
+      [2, 116, 92, 2, 117, 93],
+      [6, 58, 36, 2, 59, 37],
+      [4, 46, 20, 6, 47, 21],
+      [7, 42, 14, 4, 43, 15],
+      [4, 133, 107],
+      [8, 59, 37, 1, 60, 38],
+      [8, 44, 20, 4, 45, 21],
+      [12, 33, 11, 4, 34, 12],
+      [3, 145, 115, 1, 146, 116],
+      [4, 64, 40, 5, 65, 41],
+      [11, 36, 16, 5, 37, 17],
+      [11, 36, 12, 5, 37, 13],
+      [5, 109, 87, 1, 110, 88],
+      [5, 65, 41, 5, 66, 42],
+      [5, 54, 24, 7, 55, 25],
+      [11, 36, 12, 7, 37, 13],
+      [5, 122, 98, 1, 123, 99],
+      [7, 73, 45, 3, 74, 46],
+      [15, 43, 19, 2, 44, 20],
+      [3, 45, 15, 13, 46, 16],
+      [1, 135, 107, 5, 136, 108],
+      [10, 74, 46, 1, 75, 47],
+      [1, 50, 22, 15, 51, 23],
+      [2, 42, 14, 17, 43, 15],
+      [5, 150, 120, 1, 151, 121],
+      [9, 69, 43, 4, 70, 44],
+      [17, 50, 22, 1, 51, 23],
+      [2, 42, 14, 19, 43, 15],
+      [3, 141, 113, 4, 142, 114],
+      [3, 70, 44, 11, 71, 45],
+      [17, 47, 21, 4, 48, 22],
+      [9, 39, 13, 16, 40, 14],
+      [3, 135, 107, 5, 136, 108],
+      [3, 67, 41, 13, 68, 42],
+      [15, 54, 24, 5, 55, 25],
+      [15, 43, 15, 10, 44, 16],
+      [4, 144, 116, 4, 145, 117],
+      [17, 68, 42],
+      [17, 50, 22, 6, 51, 23],
+      [19, 46, 16, 6, 47, 17],
+      [2, 139, 111, 7, 140, 112],
+      [17, 74, 46],
+      [7, 54, 24, 16, 55, 25],
+      [34, 37, 13],
+      [4, 151, 121, 5, 152, 122],
+      [4, 75, 47, 14, 76, 48],
+      [11, 54, 24, 14, 55, 25],
+      [16, 45, 15, 14, 46, 16],
+      [6, 147, 117, 4, 148, 118],
+      [6, 73, 45, 14, 74, 46],
+      [11, 54, 24, 16, 55, 25],
+      [30, 46, 16, 2, 47, 17],
+      [8, 132, 106, 4, 133, 107],
+      [8, 75, 47, 13, 76, 48],
+      [7, 54, 24, 22, 55, 25],
+      [22, 45, 15, 13, 46, 16],
+      [10, 142, 114, 2, 143, 115],
+      [19, 74, 46, 4, 75, 47],
+      [28, 50, 22, 6, 51, 23],
+      [33, 46, 16, 4, 47, 17],
+      [8, 152, 122, 4, 153, 123],
+      [22, 73, 45, 3, 74, 46],
+      [8, 53, 23, 26, 54, 24],
+      [12, 45, 15, 28, 46, 16],
+      [3, 147, 117, 10, 148, 118],
+      [3, 73, 45, 23, 74, 46],
+      [4, 54, 24, 31, 55, 25],
+      [11, 45, 15, 31, 46, 16],
+      [7, 146, 116, 7, 147, 117],
+      [21, 73, 45, 7, 74, 46],
+      [1, 53, 23, 37, 54, 24],
+      [19, 45, 15, 26, 46, 16],
+      [5, 145, 115, 10, 146, 116],
+      [19, 75, 47, 10, 76, 48],
+      [15, 54, 24, 25, 55, 25],
+      [23, 45, 15, 25, 46, 16],
+      [13, 145, 115, 3, 146, 116],
+      [2, 74, 46, 29, 75, 47],
+      [42, 54, 24, 1, 55, 25],
+      [23, 45, 15, 28, 46, 16],
+      [17, 145, 115],
+      [10, 74, 46, 23, 75, 47],
+      [10, 54, 24, 35, 55, 25],
+      [19, 45, 15, 35, 46, 16],
+      [17, 145, 115, 1, 146, 116],
+      [14, 74, 46, 21, 75, 47],
+      [29, 54, 24, 19, 55, 25],
+      [11, 45, 15, 46, 46, 16],
+      [13, 145, 115, 6, 146, 116],
+      [14, 74, 46, 23, 75, 47],
+      [44, 54, 24, 7, 55, 25],
+      [59, 46, 16, 1, 47, 17],
+      [12, 151, 121, 7, 152, 122],
+      [12, 75, 47, 26, 76, 48],
+      [39, 54, 24, 14, 55, 25],
+      [22, 45, 15, 41, 46, 16],
+      [6, 151, 121, 14, 152, 122],
+      [6, 75, 47, 34, 76, 48],
+      [46, 54, 24, 10, 55, 25],
+      [2, 45, 15, 64, 46, 16],
+      [17, 152, 122, 4, 153, 123],
+      [29, 74, 46, 14, 75, 47],
+      [49, 54, 24, 10, 55, 25],
+      [24, 45, 15, 46, 46, 16],
+      [4, 152, 122, 18, 153, 123],
+      [13, 74, 46, 32, 75, 47],
+      [48, 54, 24, 14, 55, 25],
+      [42, 45, 15, 32, 46, 16],
+      [20, 147, 117, 4, 148, 118],
+      [40, 75, 47, 7, 76, 48],
+      [43, 54, 24, 22, 55, 25],
+      [10, 45, 15, 67, 46, 16],
+      [19, 148, 118, 6, 149, 119],
+      [18, 75, 47, 31, 76, 48],
+      [34, 54, 24, 34, 55, 25],
+      [20, 45, 15, 61, 46, 16]
+    ];
+    var qrRSBlock = function(totalCount, dataCount) {
+      var _this = {};
+      _this.totalCount = totalCount;
+      _this.dataCount = dataCount;
+      return _this;
+    };
+    var _this = {};
+    var getRsBlockTable = function(typeNumber, errorCorrectionLevel) {
+      switch(errorCorrectionLevel) {
+      case QRErrorCorrectionLevel.L :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+      case QRErrorCorrectionLevel.M :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+      case QRErrorCorrectionLevel.Q :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+      case QRErrorCorrectionLevel.H :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+      default :
+        return undefined;
+      }
+    };
+    _this.getRSBlocks = function(typeNumber, errorCorrectionLevel) {
+      var rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel);
+      if (typeof rsBlock == 'undefined') {
+        throw 'bad rs block @ typeNumber:' + typeNumber +
+            '/errorCorrectionLevel:' + errorCorrectionLevel;
+      }
+      var length = rsBlock.length / 3;
+      var list = [];
+      for (var i = 0; i < length; i += 1) {
+        var count = rsBlock[i * 3 + 0];
+        var totalCount = rsBlock[i * 3 + 1];
+        var dataCount = rsBlock[i * 3 + 2];
+        for (var j = 0; j < count; j += 1) {
+          list.push(qrRSBlock(totalCount, dataCount) );
+        }
+      }
+      return list;
+    };
+    return _this;
+  }();
+  var qrBitBuffer = function() {
+    var _buffer = [];
+    var _length = 0;
+    var _this = {};
+    _this.getBuffer = function() {
+      return _buffer;
+    };
+    _this.getAt = function(index) {
+      var bufIndex = Math.floor(index / 8);
+      return ( (_buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
+    };
+    _this.put = function(num, length) {
+      for (var i = 0; i < length; i += 1) {
+        _this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1);
+      }
+    };
+    _this.getLengthInBits = function() {
+      return _length;
+    };
+    _this.putBit = function(bit) {
+      var bufIndex = Math.floor(_length / 8);
+      if (_buffer.length <= bufIndex) {
+        _buffer.push(0);
+      }
+      if (bit) {
+        _buffer[bufIndex] |= (0x80 >>> (_length % 8) );
+      }
+      _length += 1;
+    };
+    return _this;
+  };
+  var qrNumber = function(data) {
+    var _mode = QRMode.MODE_NUMBER;
+    var _data = data;
+    var _this = {};
+    _this.getMode = function() {
+      return _mode;
+    };
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+    _this.write = function(buffer) {
+      var data = _data;
+      var i = 0;
+      while (i + 2 < data.length) {
+        buffer.put(strToNum(data.substring(i, i + 3) ), 10);
+        i += 3;
+      }
+      if (i < data.length) {
+        if (data.length - i == 1) {
+          buffer.put(strToNum(data.substring(i, i + 1) ), 4);
+        } else if (data.length - i == 2) {
+          buffer.put(strToNum(data.substring(i, i + 2) ), 7);
+        }
+      }
+    };
+    var strToNum = function(s) {
+      var num = 0;
+      for (var i = 0; i < s.length; i += 1) {
+        num = num * 10 + chatToNum(s.charAt(i) );
+      }
+      return num;
+    };
+    var chatToNum = function(c) {
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      }
+      throw 'illegal char :' + c;
+    };
+    return _this;
+  };
+  var qrAlphaNum = function(data) {
+    var _mode = QRMode.MODE_ALPHA_NUM;
+    var _data = data;
+    var _this = {};
+    _this.getMode = function() {
+      return _mode;
+    };
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+    _this.write = function(buffer) {
+      var s = _data;
+      var i = 0;
+      while (i + 1 < s.length) {
+        buffer.put(
+          getCode(s.charAt(i) ) * 45 +
+          getCode(s.charAt(i + 1) ), 11);
+        i += 2;
+      }
+      if (i < s.length) {
+        buffer.put(getCode(s.charAt(i) ), 6);
+      }
+    };
+    var getCode = function(c) {
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      } else if ('A' <= c && c <= 'Z') {
+        return c.charCodeAt(0) - 'A'.charCodeAt(0) + 10;
+      } else {
+        switch (c) {
+        case ' ' : return 36;
+        case '$' : return 37;
+        case '%' : return 38;
+        case '*' : return 39;
+        case '+' : return 40;
+        case '-' : return 41;
+        case '.' : return 42;
+        case '/' : return 43;
+        case ':' : return 44;
+        default :
+          throw 'illegal char :' + c;
+        }
+      }
+    };
+    return _this;
+  };
+  var qr8BitByte = function(data) {
+    var _mode = QRMode.MODE_8BIT_BYTE;
+    var _data = data;
+    var _bytes = qrcode.stringToBytes(data);
+    var _this = {};
+    _this.getMode = function() {
+      return _mode;
+    };
+    _this.getLength = function(buffer) {
+      return _bytes.length;
+    };
+    _this.write = function(buffer) {
+      for (var i = 0; i < _bytes.length; i += 1) {
+        buffer.put(_bytes[i], 8);
+      }
+    };
+    return _this;
+  };
+  var qrKanji = function(data) {
+    var _mode = QRMode.MODE_KANJI;
+    var _data = data;
+    var stringToBytes = qrcode.stringToBytesFuncs['SJIS'];
+    if (!stringToBytes) {
+      throw 'sjis not supported.';
+    }
+    !function(c, code) {
+      var test = stringToBytes(c);
+      if (test.length != 2 || ( (test[0] << 8) | test[1]) != code) {
+        throw 'sjis not supported.';
+      }
+    }('\u53cb', 0x9746);
+    var _bytes = stringToBytes(data);
+    var _this = {};
+    _this.getMode = function() {
+      return _mode;
+    };
+    _this.getLength = function(buffer) {
+      return ~~(_bytes.length / 2);
+    };
+    _this.write = function(buffer) {
+      var data = _bytes;
+      var i = 0;
+      while (i + 1 < data.length) {
+        var c = ( (0xff & data[i]) << 8) | (0xff & data[i + 1]);
+        if (0x8140 <= c && c <= 0x9FFC) {
+          c -= 0x8140;
+        } else if (0xE040 <= c && c <= 0xEBBF) {
+          c -= 0xC140;
+        } else {
+          throw 'illegal char at ' + (i + 1) + '/' + c;
+        }
+        c = ( (c >>> 8) & 0xff) * 0xC0 + (c & 0xff);
+        buffer.put(c, 13);
+        i += 2;
+      }
+      if (i < data.length) {
+        throw 'illegal char at ' + (i + 1);
+      }
+    };
+    return _this;
+  };
+  var byteArrayOutputStream = function() {
+    var _bytes = [];
+    var _this = {};
+    _this.writeByte = function(b) {
+      _bytes.push(b & 0xff);
+    };
+    _this.writeShort = function(i) {
+      _this.writeByte(i);
+      _this.writeByte(i >>> 8);
+    };
+    _this.writeBytes = function(b, off, len) {
+      off = off || 0;
+      len = len || b.length;
+      for (var i = 0; i < len; i += 1) {
+        _this.writeByte(b[i + off]);
+      }
+    };
+    _this.writeString = function(s) {
+      for (var i = 0; i < s.length; i += 1) {
+        _this.writeByte(s.charCodeAt(i) );
+      }
+    };
+    _this.toByteArray = function() {
+      return _bytes;
+    };
+    _this.toString = function() {
+      var s = '';
+      s += '[';
+      for (var i = 0; i < _bytes.length; i += 1) {
+        if (i > 0) {
+          s += ',';
+        }
+        s += _bytes[i];
+      }
+      s += ']';
+      return s;
+    };
+    return _this;
+  };
+  var base64EncodeOutputStream = function() {
+    var _buffer = 0;
+    var _buflen = 0;
+    var _length = 0;
+    var _base64 = '';
+    var _this = {};
+    var writeEncoded = function(b) {
+      _base64 += String.fromCharCode(encode(b & 0x3f) );
+    };
+    var encode = function(n) {
+      if (n < 0) {
+      } else if (n < 26) {
+        return 0x41 + n;
+      } else if (n < 52) {
+        return 0x61 + (n - 26);
+      } else if (n < 62) {
+        return 0x30 + (n - 52);
+      } else if (n == 62) {
+        return 0x2b;
+      } else if (n == 63) {
+        return 0x2f;
+      }
+      throw 'n:' + n;
+    };
+    _this.writeByte = function(n) {
+      _buffer = (_buffer << 8) | (n & 0xff);
+      _buflen += 8;
+      _length += 1;
+      while (_buflen >= 6) {
+        writeEncoded(_buffer >>> (_buflen - 6) );
+        _buflen -= 6;
+      }
+    };
+    _this.flush = function() {
+      if (_buflen > 0) {
+        writeEncoded(_buffer << (6 - _buflen) );
+        _buffer = 0;
+        _buflen = 0;
+      }
+      if (_length % 3 != 0) {
+        var padlen = 3 - _length % 3;
+        for (var i = 0; i < padlen; i += 1) {
+          _base64 += '=';
+        }
+      }
+    };
+    _this.toString = function() {
+      return _base64;
+    };
+    return _this;
+  };
+  var base64DecodeInputStream = function(str) {
+    var _str = str;
+    var _pos = 0;
+    var _buffer = 0;
+    var _buflen = 0;
+    var _this = {};
+    _this.read = function() {
+      while (_buflen < 8) {
+        if (_pos >= _str.length) {
+          if (_buflen == 0) {
+            return -1;
+          }
+          throw 'unexpected end of file./' + _buflen;
+        }
+        var c = _str.charAt(_pos);
+        _pos += 1;
+        if (c == '=') {
+          _buflen = 0;
+          return -1;
+        } else if (c.match(/^\s$/) ) {
+          continue;
+        }
+        _buffer = (_buffer << 6) | decode(c.charCodeAt(0) );
+        _buflen += 6;
+      }
+      var n = (_buffer >>> (_buflen - 8) ) & 0xff;
+      _buflen -= 8;
+      return n;
+    };
+    var decode = function(c) {
+      if (0x41 <= c && c <= 0x5a) {
+        return c - 0x41;
+      } else if (0x61 <= c && c <= 0x7a) {
+        return c - 0x61 + 26;
+      } else if (0x30 <= c && c <= 0x39) {
+        return c - 0x30 + 52;
+      } else if (c == 0x2b) {
+        return 62;
+      } else if (c == 0x2f) {
+        return 63;
+      } else {
+        throw 'c:' + c;
+      }
+    };
+    return _this;
+  };
+  var gifImage = function(width, height) {
+    var _width = width;
+    var _height = height;
+    var _data = new Array(width * height);
+    var _this = {};
+    _this.setPixel = function(x, y, pixel) {
+      _data[y * _width + x] = pixel;
+    };
+    _this.write = function(out) {
+      out.writeString('GIF87a');
+      out.writeShort(_width);
+      out.writeShort(_height);
+      out.writeByte(0x80); // 2bit
+      out.writeByte(0);
+      out.writeByte(0);
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+      out.writeString(',');
+      out.writeShort(0);
+      out.writeShort(0);
+      out.writeShort(_width);
+      out.writeShort(_height);
+      out.writeByte(0);
+      var lzwMinCodeSize = 2;
+      var raster = getLZWRaster(lzwMinCodeSize);
+      out.writeByte(lzwMinCodeSize);
+      var offset = 0;
+      while (raster.length - offset > 255) {
+        out.writeByte(255);
+        out.writeBytes(raster, offset, 255);
+        offset += 255;
+      }
+      out.writeByte(raster.length - offset);
+      out.writeBytes(raster, offset, raster.length - offset);
+      out.writeByte(0x00);
+      out.writeString(';');
+    };
+    var bitOutputStream = function(out) {
+      var _out = out;
+      var _bitLength = 0;
+      var _bitBuffer = 0;
+      var _this = {};
+      _this.write = function(data, length) {
+        if ( (data >>> length) != 0) {
+          throw 'length over';
+        }
+        while (_bitLength + length >= 8) {
+          _out.writeByte(0xff & ( (data << _bitLength) | _bitBuffer) );
+          length -= (8 - _bitLength);
+          data >>>= (8 - _bitLength);
+          _bitBuffer = 0;
+          _bitLength = 0;
+        }
+        _bitBuffer = (data << _bitLength) | _bitBuffer;
+        _bitLength = _bitLength + length;
+      };
+      _this.flush = function() {
+        if (_bitLength > 0) {
+          _out.writeByte(_bitBuffer);
+        }
+      };
+      return _this;
+    };
+    var getLZWRaster = function(lzwMinCodeSize) {
+      var clearCode = 1 << lzwMinCodeSize;
+      var endCode = (1 << lzwMinCodeSize) + 1;
+      var bitLength = lzwMinCodeSize + 1;
+      var table = lzwTable();
+      for (var i = 0; i < clearCode; i += 1) {
+        table.add(String.fromCharCode(i) );
+      }
+      table.add(String.fromCharCode(clearCode) );
+      table.add(String.fromCharCode(endCode) );
+      var byteOut = byteArrayOutputStream();
+      var bitOut = bitOutputStream(byteOut);
+      bitOut.write(clearCode, bitLength);
+      var dataIndex = 0;
+      var s = String.fromCharCode(_data[dataIndex]);
+      dataIndex += 1;
+      while (dataIndex < _data.length) {
+        var c = String.fromCharCode(_data[dataIndex]);
+        dataIndex += 1;
+        if (table.contains(s + c) ) {
+          s = s + c;
+        } else {
+          bitOut.write(table.indexOf(s), bitLength);
+          if (table.size() < 0xfff) {
+            if (table.size() == (1 << bitLength) ) {
+              bitLength += 1;
+            }
+            table.add(s + c);
+          }
+          s = c;
+        }
+      }
+      bitOut.write(table.indexOf(s), bitLength);
+      bitOut.write(endCode, bitLength);
+      bitOut.flush();
+      return byteOut.toByteArray();
+    };
+    var lzwTable = function() {
+      var _map = {};
+      var _size = 0;
+      var _this = {};
+      _this.add = function(key) {
+        if (_this.contains(key) ) {
+          throw 'dup key:' + key;
+        }
+        _map[key] = _size;
+        _size += 1;
+      };
+      _this.size = function() {
+        return _size;
+      };
+      _this.indexOf = function(key) {
+        return _map[key];
+      };
+      _this.contains = function(key) {
+        return typeof _map[key] != 'undefined';
+      };
+      return _this;
+    };
+    return _this;
+  };
+  var createDataURL = function(width, height, getPixel) {
+    var gif = gifImage(width, height);
+    for (var y = 0; y < height; y += 1) {
+      for (var x = 0; x < width; x += 1) {
+        gif.setPixel(x, y, getPixel(x, y) );
+      }
+    }
+    var b = byteArrayOutputStream();
+    gif.write(b);
+    var base64 = base64EncodeOutputStream();
+    var bytes = b.toByteArray();
+    for (var i = 0; i < bytes.length; i += 1) {
+      base64.writeByte(bytes[i]);
+    }
+    base64.flush();
+    return 'data:image/gif;base64,' + base64;
+  };
+  return qrcode;
+}();
+!function() {
+  qrcode.stringToBytesFuncs['UTF-8'] = function(s) {
+    function toUTF8Array(str) {
+      var utf8 = [];
+      for (var i=0; i < str.length; i++) {
+        var charcode = str.charCodeAt(i);
+        if (charcode < 0x80) utf8.push(charcode);
+        else if (charcode < 0x800) {
+          utf8.push(0xc0 | (charcode >> 6),
+              0x80 | (charcode & 0x3f));
+        }
+        else if (charcode < 0xd800 || charcode >= 0xe000) {
+          utf8.push(0xe0 | (charcode >> 12),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+        else {
+          i++;
+          charcode = 0x10000 + (((charcode & 0x3ff)<<10)
+            | (str.charCodeAt(i) & 0x3ff));
+          utf8.push(0xf0 | (charcode >>18),
+              0x80 | ((charcode>>12) & 0x3f),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+      }
+      return utf8;
+    }
+    return toUTF8Array(s);
+  };
+}();
+(function (factory) {
+  if (typeof define === 'function' && define.amd) {
+      define([], factory);
+  } else if (typeof exports === 'object') {
+      module.exports = factory();
+  }
+}(function () {
+    return qrcode;
+}));
+</script>
+<script>
+(() => {
+const ICONS = {
+  print:'<path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/>',
+  list:'<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6h.01M4 12h.01M4 18h.01"/>',
+  screen:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
+  walk:'<circle cx="13" cy="4" r="2"/><path d="M10 21l2-6 3 3v3"/><path d="M8 11l3-3 3 2 2 3"/><path d="M12 8l-1 7"/>',
+  sports:'<circle cx="12" cy="12" r="9"/><path d="M12 7.5l4 2.9-1.5 4.8h-5L8 10.4z"/><path d="M12 3v4.5M16 10.4l4.5-1.4M14.5 15.2l2.8 3.8M9.5 15.2l-2.8 3.8M8 10.4L3.5 9"/>',
+  art:'<path d="M12 3a9 9 0 1 0 0 18c1.5 0 2-1 2-2s-1-1.5-1-2.5S14 15 15 15h2a4 4 0 0 0 4-4c0-4.5-4-8-9-8z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10" cy="7" r="1.2"/><circle cx="15" cy="7.5" r="1.2"/>',
+  music:'<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
+  education:'<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M8 7h7M8 11h5"/>',
+  technology:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4M9.5 8l-2 2 2 2M14.5 8l2 2-2 2"/>',
+  culture:'<path d="M3 9l9-5 9 5zM5 9v9M9.5 9v9M14.5 9v9M19 9v9M3 20h18"/>',
+  social:'<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M15 14.5c3 0 6 2 6 5"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+  pin:'<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  age:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>',
+  org:'<path d="M4 21V7l8-4 8 4v14M9 21v-6h6v6"/>',
+  home:'<path d="M3 11l9-7 9 7M5 10v10h14V10"/>',
+  star:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+  school:'<path d="M3 10l9-5 9 5-9 5z"/><path d="M7 12.2V17c1.5 1.4 3.2 2 5 2s3.5-.6 5-2v-4.8"/><path d="M21 10v5"/>',
+  copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/>',
+  play:'<path d="M7 5l12 7-12 7z"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><path d="M12 7.5v.5"/>',
+  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5"/><circle cx="17" cy="9" r="2.8"/><path d="M16.5 13.6c2.9.2 5 2.6 5 5.4"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>',
+  heart:'<path d="M12 20s-7.5-4.6-9-9.5C2 6.9 4.5 4 7.5 4c2 0 3.5 1.2 4.5 2.6C13 5.2 14.5 4 16.5 4c3 0 5.5 2.9 4.5 6.5-1.5 4.9-9 9.5-9 9.5z"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+  bolt:'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+  crown:'<path d="M3 8l4.5 4 4.5-7 4.5 7L21 8l-2 11H5z"/>',
+  ext:'<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+  lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+  calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>'
+};
+const svg = (k, cls='') => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[k]||''}</svg>`;
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $ = s => document.querySelector(s);
+const TBC = 'Information to be confirmed';
+const today = () => { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,10); };
+
+const CATS = {
+  sports:{label:'Sports', color:'#FF796D', note:'Football, padel, skate…'},
+  art:{label:'Art', color:'#F2B62F', note:'Photo, theatre, dance…'},
+  music:{label:'Music', color:'#7655E8', note:'Bands, beats, choirs…'},
+  education:{label:'Education', color:'#3F8FE0', note:'Languages, science…'},
+  technology:{label:'Technology', color:'#1FA59A', note:'Coding, robotics…'},
+  culture:{label:'Culture', color:'#D9579F', note:'Cinema, festivals…'},
+  social:{label:'Social', color:'#2E9E6A', note:'Youth clubs, esplais…'}
+};
+const DISTRICTS = [
+  {id:'ciutat-vella',name:'Ciutat Vella',r:[210,382,180,76]},
+  {id:'eixample',name:'Eixample',r:[210,286,180,92]},
+  {id:'sants-montjuic',name:'Sants-Montjuïc',r:[20,286,186,166]},
+  {id:'les-corts',name:'Les Corts',r:[20,160,130,122]},
+  {id:'sarria',name:'Sarrià-Sant Gervasi',r:[20,20,186,136]},
+  {id:'gracia',name:'Gràcia',r:[154,160,150,122]},
+  {id:'horta',name:'Horta-Guinardó',r:[210,20,180,136]},
+  {id:'nou-barris',name:'Nou Barris',r:[394,20,186,136]},
+  {id:'sant-andreu',name:'Sant Andreu',r:[308,160,272,122]},
+  {id:'sant-marti',name:'Sant Martí',r:[394,286,186,166]}
+];
+const DNAME = Object.assign(Object.fromEntries(DISTRICTS.map(d=>[d.id,d.name])), {citywide:'All Barcelona'});
+const ageText = a => a.ageMax>=99 ? `Open to everyone (${a.ageMin}+)` : `${a.ageMin}–${a.ageMax} years`;
+const ORGS = {
+  sagnier:{name:'Espai Jove Casa Sagnier',mono:'CS',color:'#7655E8',url:'https://casasagnier.net',desc:'Municipal youth centre in Sarrià-Sant Gervasi with term workshops for 12–17 year olds.',cats:['art','music','technology','education','social']},
+  educacio:{name:'Ajuntament de Barcelona · Educació',mono:'ED',color:'#3F8FE0',url:'https://ajuntament.barcelona.cat/educacio/ca/patis-escolars-oberts',desc:'Runs Patis Escolars Oberts: school playgrounds open to everyone at weekends.',cats:['sports','social']},
+  esports:{name:'Barcelona Esports (municipal sport)',mono:'BE',color:'#FF796D',url:'https://ajuntament.barcelona.cat/esports/en/sport-public-spaces/urban-sports-parks',desc:'Municipal sport department. Manages free urban sports parks and school-age sport.',cats:['sports']},
+  joves:{name:'Joves de Barcelona · Espais Joves',mono:'EJ',color:'#2E9E6A',url:'https://www.barcelona.cat/joves/ca/espais-joves',desc:'Network of public youth spaces for people aged 12 to 35, with workshops, concerts and support.',cats:['social','music','art','education']},
+  cultura:{name:'Barcelona Cultura · municipal museums',mono:'BC',color:'#D9579F',url:'https://www.barcelona.cat/barcelonacultura/en/node/202411',desc:'Most municipal museums are free every Sunday from 15:00.',cats:['culture']},
+  tardes:{name:'Tardes Educatives',mono:'TE',color:'#5B3FD0',url:'https://ajuntament.barcelona.cat/tardeseducatives/ca/activitats',desc:'City catalogue of after-school activities for ages 6–17, with family aid available.',cats:['music','art','technology','sports','education']},
+  esplais:{name:'Esplais i caus de Barcelona',mono:'EC',color:'#F2B62F',url:'https://esplaisicaus.cat/index.php',desc:'Directory of leisure-education groups (esplais and scouts) across the city.',cats:['social','culture']},
+  casals:{name:'Casals de joves',mono:'CJ',color:'#1FA59A',url:'https://ajuntament.barcelona.cat/joves/ca/canal/casals-de-joves-0',desc:'Youth-run centres in the neighbourhoods.',cats:['social','music','art']},
+  ajuntament:{name:'Ajuntament de Barcelona',mono:'AB',color:'#D6453A',url:'https://ajuntament.barcelona.cat/',desc:'Barcelona City Council. Publishes municipal programmes and youth services.',cats:['sports','culture','education','social']},
+  bofill:{name:'Fundació Bofill',mono:'FB',color:'#25243A',url:'https://fundaciobofill.cat/',desc:'Foundation working on educational equity and opportunities.',cats:['education']},
+  e360:{name:'Educació 360',mono:'360',color:'#D9579F',url:'https://www.educacio360.cat/',desc:'Network connecting education in and out of school time.',cats:['education','social']}
+};
+
+// REAL activities. Checked against the official sources listed in each entry on 3 Nov 2026.
+const V = '2026-11-03';
+const SRC_SAGNIER = 'https://ajuntament.barcelona.cat/espai-jove-casa-sagnier/sites/default/files/Agenda_de_tardor_2026-Espai_Jove_Casa_Sagnier.pdf';
+const REG_SAGNIER = 'https://casasagnier.miram.cloud/MiramModular/buscador/buscador.jsp';
+const PATIS = 'https://ajuntament.barcelona.cat/educacio/ca/patis-escolars-oberts';
+const PARKS = 'https://ajuntament.barcelona.cat/esports/en/sport-public-spaces/urban-sports-parks';
+const MUSEUMS = 'https://www.barcelona.cat/barcelonacultura/en/node/202411';
+const ESPAIS = 'https://www.barcelona.cat/joves/ca/espais-joves';
+const R = o => Object.assign({demo:false,status:'verified',lastVerified:V,full:false,scholarship:false,trending:false,endDate:null,regRequired:true,regType:'online',regUrl:null,infoUrl:null,priceText:null,address:null,schedule:null,dates:null,duration:null}, o);
+const SG = o => R(Object.assign({org:'sagnier',district:'sarria',address:'C. Brusi, 61 (Jardins d’Enric Sagnier), 08006',ageMin:12,ageMax:17,price:'low',priceText:'€37.79 for 10 sessions',days:['weekday'],times:['afternoon'],dates:'Autumn term 2026',duration:'90 min',regType:'online',regUrl:REG_SAGNIER,infoUrl:'https://ajuntament.barcelona.cat/espai-jove-casa-sagnier/ca/tallers',source:SRC_SAGNIER,regReq:'Online registration on the Casa Sagnier portal. Limited places.'}, o));
+const PT = o => R(Object.assign({cat:'sports',sub:'Open playground',org:'educacio',ageMin:12,ageMax:99,price:'free',priceText:'Free',days:['weekend'],dates:'Weekends during the school year',duration:'3 h',regRequired:false,regType:'none',infoUrl:PATIS,source:PATIS,regReq:'No registration. Free entry for anyone; a monitor opens and supervises the playground.',desc:'A school playground opened to everyone at the weekend. Space to play football or basketball, or just hang out with friends.'}, o));
+const PK = o => R(Object.assign({cat:'sports',sub:'Skate & urban sports',org:'esports',ageMin:12,ageMax:99,price:'free',priceText:'Free',days:['weekday','weekend'],times:['morning','afternoon'],dates:'All year',duration:'Drop in',schedule:'Public park, check opening hours on site',regRequired:false,regType:'none',infoUrl:PARKS,source:PARKS,regReq:'No registration. Free public park.'}, o));
+const EJ = o => R(Object.assign({cat:'social',sub:'Youth centre',org:'joves',ageMin:12,ageMax:35,price:'tbc',priceText:'Depends on the activity (check website)',days:['weekday','weekend'],times:['morning','afternoon'],dates:'September to July',duration:'Drop in',regType:'site',source:ESPAIS,regReq:'Some activities need registration. See the centre’s website.',desc:'Public youth space for 12 to 35 year olds with workshops, concerts, exhibitions and a place to meet people.'}, o));
+const MU = o => R(Object.assign({cat:'culture',sub:'Museums',org:'cultura',ageMin:12,ageMax:99,price:'free',priceText:'Free every Sunday from 15:00',days:['weekend'],times:['afternoon'],schedule:'Sundays from 15:00 (free entry)',dates:'Every Sunday',duration:'As long as you like',regRequired:false,regType:'none',infoUrl:MUSEUMS,source:MUSEUMS,regReq:'No registration. Free entry on Sunday afternoons.'}, o));
+
+const SEED = [
+  // Casa Sagnier autumn 2026 workshops (ages 12-17). Links open the exact workshop on the official registration portal.
+  SG({id:'sg-kpop',name:'K-Pop choreography',cat:'art',sub:'Dance',desc:'Learn K-Pop routines with a group of teens and perform them together.',schedule:'Fridays, 17:30–19:00',dates:'2 Oct – 11 Dec 2026',endDate:'2026-12-11',waitlist:true,regUrl:'https://casasagnier.miram.cloud/MiramModular/buscador/buscador.jsp?g=1&c=10010&t=IL&f=17&p=0#DATS729',trending:true}),
+  SG({id:'sg-urban',name:'Urban dance',cat:'art',sub:'Dance',desc:'Street and urban dance styles, from basic steps to full choreography.',schedule:'Tuesdays, 17:30–19:00',dates:'6 Oct – 15 Dec 2026',endDate:'2026-12-15',regUrl:'https://casasagnier.miram.cloud/MiramModular/buscador/buscador.jsp?g=1&c=10010&t=IL&f=17&p=1#DATS730'}),
+  SG({id:'sg-3d',name:'3D design',cat:'technology',sub:'Design & 3D',desc:'Design your own objects in 3D on the computer.',schedule:'Tuesdays, 17:30–19:00',dates:'13 Oct – 22 Dec 2026',endDate:'2026-12-22',waitlist:true,regUrl:'https://casasagnier.miram.cloud/MiramModular/buscador/buscador.jsp?g=1&c=10010&t=IL&f=17&p=2#DATS728'}),
+  SG({id:'sg-lego',name:'LEGO robotics (LEGO League)',cat:'technology',sub:'Robotics',desc:'Build and program LEGO robots and get ready to take part in the LEGO League.',schedule:'Fridays, 17:30–19:00',dates:'2 Oct – 11 Dec 2026',endDate:'2026-12-11',waitlist:true,regUrl:'https://casasagnier.miram.cloud/MiramModular/buscador/buscador.jsp?g=1&c=10010&t=IL&f=17&p=0#DATS743'}),
+  SG({id:'sg-unity-mon',name:'Video games with Unity · Mondays',cat:'technology',sub:'Coding & games',desc:'Create your own video game using the Unity engine.',priceText:'€50.38 for 10 sessions',schedule:'Mondays, 17:30–19:30',dates:'5 Oct – 21 Dec 2026',duration:'2 h',endDate:'2026-12-21',waitlist:true,regUrl:'https://casasagnier.miram.cloud/MiramModular/buscador/buscador.jsp?g=1&c=10010&t=IL&f=17&p=1#DATS726'}),
+  SG({id:'sg-unity-thu',name:'Video games with Unity · Thursdays',cat:'technology',sub:'Coding & games',desc:'Create your own video game using the Unity engine.',priceText:'€50.38 for 10 sessions',schedule:'Thursdays, 17:30–19:30',dates:'8 Oct – 10 Dec 2026',duration:'2 h',endDate:'2026-12-10',regUrl:'https://casasagnier.miram.cloud/MiramModular/buscador/buscador.jsp?g=1&c=10010&t=IL&f=17&p=1#DATS727',trending:true}),
+  SG({id:'sg-magic',name:'Magic workshop',cat:'art',sub:'Theatre & performance',desc:'Learn magic tricks and how to present them to an audience.',schedule:'Fridays, 16:00–17:30',dates:'2 Oct – 11 Dec 2026',endDate:'2026-12-11',regUrl:'https://casasagnier.miram.cloud/MiramModular/buscador/buscador.jsp?g=1&c=10010&t=IL&f=17&p=0#DATS734'}),
+  SG({id:'sg-water',name:'Watercolour for beginners',cat:'art',sub:'Painting & drawing',desc:'Start painting with watercolours, no experience needed.',schedule:'Fridays, 16:00–17:30',dates:'2 Oct – 11 Dec 2026',endDate:'2026-12-11',regUrl:'https://casasagnier.miram.cloud/MiramModular/buscador/buscador.jsp?g=1&c=10010&t=IL&f=17&p=0#DATS735'}),
+  SG({id:'sg-catala',name:'Catalan for newcomers',cat:'education',sub:'Languages',desc:'Free Catalan support course for teens who have recently arrived in Barcelona.',price:'free',priceText:'Free',ageMax:18,schedule:'Thursdays, 18:00–19:30',dates:'Autumn term 2026',endDate:'2026-12-10',regUrl:'https://casasagnier.miram.cloud/MiramModular/buscador/buscador.jsp?g=1&c=10010&t=IL&f=17&p=2'}),
+  SG({id:'sg-minecraft',name:'Minecraft group',cat:'technology',sub:'Coding & games',desc:'Open group to build and play Minecraft together.',price:'free',priceText:'Free',schedule:'Wednesdays, 17:30–19:00',dates:'7 Oct – 16 Dec 2026',endDate:'2026-12-16',regUrl:'https://casasagnier.miram.cloud/MiramModular/buscador/buscador.jsp?g=1&c=10010&t=IL&f=16#DATS721',regReq:'Free, but you need to register on the portal.'}),
+  SG({id:'sg-trepa',name:'La Trepa Creativa',cat:'art',sub:'Creative workshops',desc:'Creative art lab: experiment with materials and make your own projects.',price:'free',priceText:'Free',schedule:'Thursdays, 17:30–19:00',dates:'8 Oct – 10 Dec 2026',endDate:'2026-12-10',regUrl:'https://casasagnier.miram.cloud/MiramModular/buscador/buscador.jsp?g=1&c=10010&t=IL&f=16#DATS737',regReq:'Free, but you need to register on the portal.'}),
+  SG({id:'sg-dimecres',name:'Dimecres Jove (Youth Wednesdays)',cat:'social',sub:'Group activities',desc:'Weekly Wednesday afternoon group at Casa Sagnier. See the portal for each week’s plan.',price:'free',priceText:'Free',schedule:'Wednesdays, 17:30–19:00',dates:'30 Sep – 9 Dec 2026',endDate:'2026-12-09',regUrl:'https://casasagnier.miram.cloud/MiramModular/buscador/buscador.jsp?g=1&c=10010&t=IL&f=16#DATS703',regReq:'Free, sign up on the portal.'}),
+  SG({id:'sg-boardgames',name:'Board game group',cat:'social',sub:'Board games',desc:'Free play with board games every Friday and Saturday, plus organised games.',price:'free',priceText:'Free',days:['weekday','weekend'],schedule:'Fridays 15:30–20:30 · Saturdays 16:00–20:00',dates:'4 Sep – 19 Dec 2026',endDate:'2026-12-19',duration:'Drop in',regUrl:'https://casasagnier.miram.cloud/MiramModular/buscador/buscador.jsp?g=1&c=10010&t=IL&f=16#DATS722',regReq:'Free play needs no registration. Organised games via @jocsdetaulasagnier on Instagram.',trending:true}),
+
+  // Tardes Educatives
+  R({id:'te-pausa',name:'Youth choir & instrument',cat:'music',sub:'Instruments',org:'tardes',desc:'Choir plus an instrument at Escola de Música Pausa, part of the Tardes Educatives programme.',district:'horta',address:'C. Alt de Pedrell, 60 bxs (La Font d’en Fargues)',ageMin:11,ageMax:17,price:'paid',priceText:'€105/month or €1,165/year',scholarship:true,days:['weekday'],times:['afternoon'],schedule:'Mon–Fri, one 1h30 session; day and time agreed with the school',dates:'7 Sep 2026 – 21 Jun 2027',endDate:'2027-06-21',duration:'90 min',regType:'inperson',infoUrl:'https://ajuntament.barcelona.cat/tardeseducatives/ca/activitats/musica-joves-1a-coral-i-instrument-escola-de-musica-pausa-horta-guinardo-la-font-den',source:'https://ajuntament.barcelona.cat/tardeseducatives/ca/activitats/musica-joves-1a-coral-i-instrument-escola-de-musica-pausa-horta-guinardo-la-font-den',regReq:'In person at the school (tel. 931 826 010). Family aid information on the official page.'}),
+
+  // Patis Escolars Oberts (institutes)
+  PT({id:'pt-pauclaris',name:'Open playground · Institut Pau Claris',district:'ciutat-vella',address:'Pg. Lluís Companys, 18',schedule:'Saturdays, 17:30–20:30',times:['afternoon'],trending:true}),
+  PT({id:'pt-fortpius',name:'Open playground · Institut Fort Pius',district:'eixample',address:'C. Ausiàs Marc, 78',schedule:'Sundays, 11:00–14:00',times:['morning']}),
+  PT({id:'pt-sants',name:'Open playground · Institut Sants',district:'sants-montjuic',address:'C. Dolors Batlle i Sunyer, 9-13',schedule:'Sundays, 16:30–19:30',times:['afternoon']}),
+  PT({id:'pt-vives',name:'Open playground · Lluís Vives',district:'sants-montjuic',address:'C. Canalejas, 107',schedule:'Saturdays 11:00–14:00 and 16:00–19:00 · Sundays 16:00–19:00',times:['morning','afternoon']}),
+  PT({id:'pt-menendez',name:'Open playground · Institut Menéndez y Pelayo',district:'sarria',address:'Via Augusta, 140',schedule:'Sundays, 11:00–14:00',times:['morning']}),
+  PT({id:'pt-coves',name:'Open playground · Coves d’en Cimany',district:'horta',address:'C. Coves d’en Cimany, 42-54',schedule:'Saturdays 16:30–19:30 · Sundays 11:00–14:00 and 16:30–19:30',times:['morning','afternoon']}),
+  PT({id:'pt-josep-pla',name:'Open playground · Institut Josep Pla',district:'nou-barris',address:'C. de la Vall d’Ordesa, 24-34',schedule:'Saturdays, 16:30–19:30',times:['afternoon']}),
+  PT({id:'pt-congres',name:'Open playground · Institut Barcelona Congrés',district:'nou-barris',address:'C. Baró d’Esponellà, 1-15',schedule:'Sundays, 11:00–14:00',times:['morning']}),
+  PT({id:'pt-aleu',name:'Open playground · Institut Dolors Aleu',district:'sant-andreu',address:'Pl. Ferran Reyes, 2',schedule:'Sundays, 11:00–14:00',times:['morning']}),
+  PT({id:'pt-metge',name:'Open playground · Institut Bernat Metge',district:'sant-marti',address:'C. de Menorca (entrance via Pl. de la Verneda)',schedule:'Saturdays, 11:00–14:00',times:['morning']}),
+  PT({id:'pt-besos',name:'Open playground · Institut Barri Besòs',district:'sant-marti',address:'C. Josep Pla, 40',schedule:'Sundays, 11:00–14:00',times:['morning']}),
+
+  // Urban sports parks
+  PK({id:'pk-marbella',name:'Mar Bella urban sports park',district:'sant-marti',address:'Av. del Litoral, 106',desc:'Big free skatepark by the beach, with funboxes and ramps for skate and bike.',trending:true}),
+  PK({id:'pk-favencia',name:'Via Favència urban sports park',district:'nou-barris',address:'Via Favència, 186A',desc:'Free park for skateboarding and other urban sports.'}),
+  PK({id:'pk-aurea',name:'Àurea Cuadrado urban sports park',district:'les-corts',address:'C. del General Batet, 1',desc:'Free urban sports park in Les Corts.'}),
+  PK({id:'pk-marina',name:'La Marina urban sports park',district:'sants-montjuic',address:'Pl. del Moviment Obrer (La Marina)',desc:'Skate areas for every level, free to use.'}),
+  PK({id:'pk-barodeviver',name:'Baró de Viver urban sports park',district:'sant-andreu',address:'Next to Baró de Viver metro station',desc:'Beginner-friendly, multi-use skate park.'}),
+
+  // Espais Joves
+  EJ({id:'ej-palaualos',name:'Espai Jove Palau Alòs',district:'ciutat-vella',address:'C. Sant Pere Més Baix, 55',schedule:'Every day, 09:00–22:00 (closed in August)',regUrl:'https://www.barcelona.cat/palaualos/ca/'}),
+  EJ({id:'ej-fontana',name:'Espai Jove La Fontana',district:'gracia',address:'C. Gran de Gràcia, 190-192',schedule:'Mon–Thu 9:00–14:00 & 17:00–21:00 · Fri 17:00–21:00 · Sat 10:00–14:00 & 16:00–21:00',regUrl:'https://lafontana.org/'}),
+  EJ({id:'ej-basses',name:'Espai Jove Les Basses',district:'nou-barris',address:'C. Teide, 20',schedule:'Mon–Fri 8:30–15:00 & 16:00–21:30 · Sat 10:00–14:30 & 18:00–23:30',regUrl:'https://www.espaijovelesbasses.org/'}),
+  EJ({id:'ej-garcilaso',name:'Espai Jove Garcilaso',district:'sant-andreu',regUrl:'http://www.espaijovegarcilaso.org/'}),
+  EJ({id:'ej-bascula',name:'Espai Jove La Bàscula',district:'sants-montjuic',regUrl:'http://www.labascula.cat/'}),
+  EJ({id:'ej-panarra',name:'Espai Jove Ca la Panarra',district:'les-corts',regUrl:'https://calapanarra.cat/'}),
+  EJ({id:'ej-eixjove',name:'Eix Jove',district:'eixample',regUrl:'https://eixjove.cat/'}),
+  EJ({id:'ej-bocanord',name:'Espai Jove Boca Nord',district:'horta',regUrl:'https://www.instagram.com/bocanord/'}),
+  EJ({id:'ej-sagnier',name:'Espai Jove Casa Sagnier',district:'sarria',address:'C. Brusi, 61 (Jardins d’Enric Sagnier)',regUrl:'https://casasagnier.net'}),
+
+  // Municipal museums, free on Sunday afternoons
+  MU({id:'mu-cccb',infoUrl:'https://guia.barcelona.cat/en/detall/centre-de-cultura-contemporania-de-barcelona_94042144909.html',name:'CCCB · free Sunday afternoons',district:'ciutat-vella',address:'C. Montalegre, 5',desc:'Exhibitions on culture, cities and technology at the Centre de Cultura Contemporània.',trending:true}),
+  MU({id:'mu-maritim',infoUrl:'https://meet.barcelona/en/visit-and-love-it/points-interest-city/museu-maritim-de-barcelona-92086000438',name:'Maritime Museum · free Sundays',district:'ciutat-vella',address:'Av. de les Drassanes, s/n',desc:'Ships, maps and sea stories inside the medieval shipyards.'}),
+  MU({id:'mu-muhba',infoUrl:'https://barcelona.cat/museuhistoria/ca/patrimonis/els-espais-del-muhba/placa-de-rei',name:'MUHBA Plaça del Rei · free Sundays',district:'ciutat-vella',address:'Pl. del Rei, s/n',desc:'Walk through the Roman ruins under the old town.'}),
+  MU({id:'mu-disseny',infoUrl:'https://barcelona.cat/gaudirmes/en/detall/99400218118',name:'Design Museum · free Sundays',district:'sant-marti',address:'Pl. de les Glòries Catalanes, 37-38',desc:'Fashion, objects and graphic design from past to present.'}),
+  MU({id:'mu-blau',infoUrl:'https://barcelona.cat/ciutatcuidadora/en/detail/99400090058',name:'Museu Blau (Natural Sciences) · free Sundays',district:'sant-marti',address:'Pl. Leonardo da Vinci, 4-5',desc:'Fossils, minerals and a huge whale skeleton.'}),
+  MU({id:'mu-etno',infoUrl:'https://continguts-www.barcelona.cat/museu-etnologic-culturesmon/en/visit/information-reservation',name:'Ethnological Museum · free Sundays',district:'sants-montjuic',address:'Pg. de Santa Madrona, 16-22 (Montjuïc)',desc:'Objects and traditions from Catalonia and around the world.'}),
+
+  // Citywide resources
+  R({id:'cw-estarb',name:'EstarB · free emotional support',cat:'social',sub:'Wellbeing support',org:'joves',district:'citywide',desc:'Free psychological and emotional support service for young people aged 12 to 25.',ageMin:12,ageMax:25,price:'free',priceText:'Free',days:['weekday'],times:['morning','afternoon'],dates:'All year',regType:'site',regUrl:'https://www.barcelona.cat/joves/ca/estarb',source:'https://barcelona.cat/ca/viure-a-bcn/amb-adolescents-i-joves',regReq:'Contact through the official page.'}),
+  R({id:'cw-sports-guide',name:'Find a school-age sports club',cat:'sports',sub:'Sports clubs',org:'esports',district:'citywide',desc:'Official guide to approved sports for ages 6 to 17. Search by district, age and sport: football, basketball, volleyball, swimming and more.',ageMin:12,ageMax:17,price:'tbc',priceText:'Depends on the club',days:['weekday','weekend'],times:['morning','afternoon'],dates:'School year',regType:'site',regUrl:'http://www.plaesportescolarbcn.cat/ca/',source:'https://ajuntament.barcelona.cat/esports/en/school-age-sport-and-physical-activity/sports-outside-school-hours',regReq:'Register directly with the club you choose.'}),
+  R({id:'cw-esplais',name:'Join an esplai or scout group',cat:'social',sub:'Esplais & scouts',org:'esplais',district:'citywide',desc:'Leisure-education groups with games, outings and camps led by trained monitors. Find one in your neighbourhood.',ageMin:12,ageMax:17,price:'tbc',priceText:'Depends on the group',days:['weekend'],times:['morning','afternoon'],dates:'School year',regType:'site',regUrl:'https://esplaisicaus.cat/index.php',source:'https://barcelona.cat/ca/viure-a-bcn/amb-adolescents-i-joves',regReq:'Register with the group you choose.'}),
+  R({id:'cw-tardes',name:'Tardes Educatives catalogue',cat:'education',sub:'After-school catalogue',org:'tardes',district:'citywide',desc:'Search hundreds of after-school activities (music, robotics, dance, sport…) by age, district and weekday.',ageMin:12,ageMax:17,price:'tbc',priceText:'Varies; family aid available',scholarship:true,days:['weekday'],times:['afternoon'],dates:'School year 2026–27',regType:'site',regUrl:'https://ajuntament.barcelona.cat/tardeseducatives/ca/activitats',source:'https://ajuntament.barcelona.cat/tardeseducatives/ca/activitats',regReq:'Each activity explains how to register.'})
+];
+
+
+// ---------- settings ----------
+// Email of the CONNECT team, used by the contact buttons.
+const TEAM_EMAIL = '';
+
+// ---------- state ----------
+const KEY = 'connect-schools-v1';
+const freshPlan = () => ({ step:1, school:'', cls:'', district:'', age:'', picks:[], filt:{cat:'', price:'', when:''}, visit:{act:'', checks:{}}, counts:{size:'', went:'', acts:'', groups:''}, goal:10 });
+const freshState = () => ({ db: SEED.map(a=>({...a})), plan: freshPlan() });
+let S;
+try { S = JSON.parse(localStorage.getItem(KEY)) || freshState(); } catch(e) { S = freshState(); }
+if(!S.db) S = freshState();
+S.plan = Object.assign(freshPlan(), S.plan||{});
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} };
+
+const byId = id => S.db.find(a=>a.id===id);
+const isExpired = a => a.endDate && a.endDate < today();
+const publicList = () => S.db.filter(a=>!isExpired(a));
+const orgOf = a => ORGS[a.org] || {name:TBC,url:null};
+const priceShort = a => a.price==='free' ? 'Free' : a.price==='low' ? 'Low cost' : a.price==='paid' ? 'Paid' : 'Price varies';
+const linkOf = a => a.regUrl || a.infoUrl || a.source || '';
+const AGES = {'12-13':[12,13],'14-15':[14,15],'16-18':[16,18]};
+const AGE_LABEL = {'12-13':'12–13','14-15':'14–15','16-18':'16–18'};
+
+let tT; const toast = m => { const t=$('#toast'); t.textContent=m; t.classList.add('on'); clearTimeout(tT); tT=setTimeout(()=>t.classList.remove('on'),3200); };
+const dlg = $('#dlg');
+function openDlg(html, wide){ $('#dlgContent').innerHTML = html; dlg.classList.toggle('wide', !!wide); if(!dlg.open) dlg.showModal(); }
+dlg.addEventListener('click', e => { if(e.target===dlg || e.target.closest('[data-close]')) dlg.close(); });
+dlg.addEventListener('close', () => { document.body.classList.remove('printing'); });
+
+// ---------- QR ----------
+function qrCanvas(text){
+  const q = qrcode(0,'M'); q.addData(text); q.make();
+  const n = q.getModuleCount(), cell = Math.max(4, Math.floor(300/(n+8))), size=(n+8)*cell, cv=document.createElement('canvas');
+  cv.width=cv.height=size; const cx=cv.getContext('2d'); cx.fillStyle='#fff'; cx.fillRect(0,0,size,size); cx.fillStyle='#25243A';
+  for(let r=0;r<n;r++) for(let c=0;c<n;c++) if(q.isDark(r,c)) cx.fillRect((c+4)*cell,(r+4)*cell,cell,cell);
+  return cv;
+}
+const qrImg = (text, alt) => { try { return `<img src="${qrCanvas(text).toDataURL()}" alt="${esc(alt||'QR code')}">`; } catch(e){ return ''; } };
+
+// ---------- plan helpers ----------
+const P = () => S.plan;
+const placeName = () => P().school || (P().district ? DNAME[P().district] : 'our school');
+const classLabel = () => [P().cls, P().school].filter(Boolean).join(' · ') || (P().district ? `Near ${DNAME[P().district]}` : '');
+const picks = () => P().picks.map(byId).filter(Boolean);
+function candidates(){
+  const [lo,hi] = AGES[P().age] || [12,18];
+  const f = P().filt;
+  const rank = a => a.district===P().district ? 0 : a.district==='citywide' ? 1 : 2;
+  return publicList().filter(a=> a.ageMin<=hi && a.ageMax>=lo && !a.full)
+    .filter(a=> !f.cat || a.cat===f.cat)
+    .filter(a=> !f.price || (f.price==='free' ? a.price==='free' : (a.price==='free'||a.price==='low')))
+    .filter(a=> !f.when || (f.when==='after' ? (a.days.includes('weekday')&&a.times.includes('afternoon')) : a.days.includes('weekend')))
+    .map((a,i)=>[a,i]).sort((x,y)=>rank(x[0])-rank(y[0])||x[1]-y[1]).map(x=>x[0]);
+}
+
+// ---------- wizard ----------
+const STEPS = [['Your class','School, district and age'],['Choose activities','3 to 8 near your school'],['Print materials','Board, sheet, letter, challenge'],['Organise & follow up','Groups, first visit, count']];
+const canGo = n => n===1 || (n>=2 && P().district && P().age) && (n<=2 || P().picks.length>=3);
+function renderWizard(){
+  $('#wizard').innerHTML = STEPS.map(([t,s],i)=>{ const n=i+1; const cur=P().step===n; const done=n<P().step;
+    return `<li><button type="button" data-step="${n}" ${cur?'aria-current="step"':''} class="${done?'done':''}" ${canGo(n)?'':'disabled'}><span class="n">${done?'✓':n}</span><span><b>${t}</b><small>${s}</small></span></button></li>`; }).join('');
+  $('#progBar').style.width = (P().step/4*100)+'%';
+  const fn = [null, step1, step2, step3, step4][P().step];
+  $('#stepBody').innerHTML = fn();
+  if(P().step===4) renderSummary();
+}
+function goStep(n){ if(!canGo(n)) return; P().step=n; save(); renderWizard(); $('#wizard').scrollIntoView({behavior:'smooth', block:'start'}); }
+const navBtns = (back, next, nextLabel, nextOk=true) => `<div class="step-nav">${back?`<button class="btn line" type="button" data-step="${back}">← Back</button>`:'<span></span>'}${next?`<button class="btn primary" type="button" data-step="${next}" ${nextOk?'':'disabled'}>${nextLabel} →</button>`:''}</div>`;
+
+function step1(){
+  const p = P();
+  return `<form class="step-card" id="f1">
+    <div><div class="eyebrow">Step 1</div><h3>Tell us about your class</h3><p class="muted" style="margin-top:6px">The district and age are used to suggest activities. School and class names only appear on your printouts.</p></div>
+    <div class="form3">
+      <div class="field"><label for="p1School">School name (optional)</label><input type="text" id="p1School" maxlength="60" value="${esc(p.school)}" placeholder="e.g. Institut del Barri"></div>
+      <div class="field"><label for="p1Class">Class (optional)</label><input type="text" id="p1Class" maxlength="30" value="${esc(p.cls)}" placeholder="e.g. 2nd ESO B"></div>
+      <div class="field"><label for="p1Dist">District of the school</label><select id="p1Dist" required><option value="">Choose a district</option>${DISTRICTS.map(d=>`<option value="${d.id}" ${p.district===d.id?'selected':''}>${d.name}</option>`).join('')}</select></div>
+      <fieldset class="field" style="border:0;padding:0;margin:0"><legend class="lab" style="margin-bottom:6px">Age of the group</legend><div class="seg">${Object.keys(AGES).map(k=>`<label><input type="radio" name="p1Age" value="${k}" ${p.age===k?'checked':''} required><span>${AGE_LABEL[k]}</span></label>`).join('')}</div></fieldset>
+    </div>
+    <p class="err" id="e1" hidden></p>
+    <div class="step-nav"><span></span><button class="btn primary" type="submit">Choose activities →</button></div>
+  </form>`;
+}
+function step2(){
+  const list = candidates(); const f = P().filt; const n = P().picks.length;
+  const chip = (k,v,l) => `<button type="button" class="chip" data-filt="${k}" data-v="${v}" aria-pressed="${f[k]===v}">${l}</button>`;
+  return `<div class="step-card">
+    <div><div class="eyebrow">Step 2</div><h3>Choose 3 to 8 activities for ${esc(P().cls||'your class')}</h3><p class="muted" style="margin-top:6px">Ages ${AGE_LABEL[P().age]} · activities in ${esc(DNAME[P().district])} first, then citywide ones. Every activity links to its official page.</p></div>
+    <div class="filt"><span class="lab">Type</span>${chip('cat','','All')}${Object.entries(CATS).map(([k,c])=>chip('cat',k,`<i style="background:${c.color}"></i>${c.label}`)).join('')}</div>
+    <div class="filt"><span class="lab">Price</span>${chip('price','','Any')}${chip('price','free','Free')}${chip('price','low','Free or low cost')}<span class="lab" style="margin-left:10px">When</span>${chip('when','','Any')}${chip('when','after','After school')}${chip('when','weekend','Weekends')}</div>
+    <div class="picklist">${list.length ? list.map(pickRow).join('') : '<p class="muted">No activities match these filters. Try removing one.</p>'}</div>
+    <div class="sticky-count"><b>${n} of 8 chosen${n<3?` · choose at least ${3-n} more`:''}</b><span style="display:flex;gap:8px"><button class="btn line small" type="button" data-step="1" style="color:#fff;border-color:rgba(255,255,255,.3)">← Back</button><button class="btn primary small" type="button" data-step="3" ${n>=3?'':'disabled'}>Print materials →</button></span></div>
+  </div>`;
+}
+function pickRow(a){
+  const on = P().picks.includes(a.id); const full = !on && P().picks.length>=8;
+  return `<div class="pick ${on?'on':''}"><div class="bar" style="background:${CATS[a.cat].color}"></div>
+    <div style="min-width:0">${a.district===P().district?'<div class="near">Near your school</div>':''}<h4>${esc(a.name)}</h4>
+      <div class="meta"><span>${svg(a.cat)}${CATS[a.cat].label} · ${esc(a.sub||'')}</span><span>${svg('pin')}${esc(DNAME[a.district])}${a.address?` · ${esc(a.address)}`:''}</span><span>${svg('clock')}${esc(a.schedule||'See official page')}</span><span>${svg('star')}${esc(a.priceText||priceShort(a))}</span><span>${svg('age')}${esc(ageText(a))}</span><span>${svg('org')}${esc(orgOf(a).name)}</span></div></div>
+    <div class="acts"><button class="btn ${on?'primary':'line'} small" type="button" data-pick="${a.id}" aria-pressed="${on}" ${full?'disabled':''}>${on?'✓ In class plan':'Add to class plan'}</button>${linkOf(a)?`<a class="src" href="${esc(linkOf(a))}" target="_blank" rel="noopener noreferrer">Official page ↗</a>`:''}<span class="muted" style="font-size:12px">Checked ${esc(a.lastVerified||'—')}</span></div></div>`;
+}
+const MATS = [
+  ['board','Classroom board','A poster for the class noticeboard with the activities you chose.','<b>Our class plan</b><i></i><i class="c"></i><i></i><i class="y"></i><i class="c"></i><i></i>'],
+  ['interest','Interest sheet','Students write their name under the activities they’d like to try, on paper.','<b>Interest sheet</b><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i>'],
+  ['letter','Family letter','The activities with their official links, plus an authorisation for a first group visit.','<b>Dear families,</b><i></i><i></i><i class="y"></i><i class="y"></i><i class="l"></i><i class="c"></i>'],
+  ['challenge','Class challenge','A sheet for the wall: one sticker for every visit made by the class.','<b>Class challenge</b><div class="dots"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>']
+];
+function step3(){
+  return `<div class="step-card">
+    <div><div class="eyebrow">Step 3</div><h3>Print your materials</h3><p class="muted" style="margin-top:6px">Everything is designed for paper (A4). Students don’t need a phone to take part.</p></div>
+    <div class="mats">${MATS.map(([k,t,d,th])=>`<div class="mat"><div class="thumb" aria-hidden="true">${th}</div><h3>${t}</h3><p class="muted">${d}</p><div class="btns"><button class="btn primary small" type="button" data-sheet="${k}">${svg('print')} Preview & print</button></div></div>`).join('')}</div>
+    ${navBtns(2,4,'Organise & follow up')}
+  </div>`;
+}
+const VISIT_CHECKS = ['Contact the organiser to agree a date for the group','Send the family letter and collect the signed authorisations','Set the meeting point at school and the time','Confirm which teacher or educator goes with the group'];
+function step4(){
+  const p = P(); const ps = picks(); const c = p.counts;
+  return `<div class="org4">
+    <div class="step-card">
+      <div class="eyebrow">Step 4 · A</div><h3>Form groups from the interest sheet</h3>
+      <ul class="ticks"><li>Collect the interest sheet after a few days on the noticeboard.</li><li>Put together students who signed up for the same activity, especially those who ticked “I’d like to go with classmates”.</li><li>Tell each group in class who else is going, and when.</li><li>Nobody has to go alone, and no app or personal data is needed.</li></ul>
+    </div>
+    <div class="step-card">
+      <div class="eyebrow">Step 4 · B</div><h3>First visit together (optional)</h3>
+      <p class="muted">Visit one activity as a group, with a teacher or educator, so it isn’t new the next time.</p>
+      <div class="field"><label for="visitAct">Activity for the first visit</label><select id="visitAct"><option value="">Choose one of your activities</option>${ps.map(a=>`<option value="${a.id}" ${p.visit.act===a.id?'selected':''}>${esc(a.name)}</option>`).join('')}</select></div>
+      <div class="check-list">${VISIT_CHECKS.map((t,i)=>`<label><input type="checkbox" data-vcheck="${i}" ${p.visit.checks[i]?'checked':''}> ${t}</label>`).join('')}</div>
+    </div>
+    <div class="step-card">
+      <div class="eyebrow">Step 4 · C</div><h3>End-of-term count</h3>
+      <p class="muted">Only numbers, no names. It shows whether CONNECT is getting your class out into the neighbourhood.</p>
+      <div class="count-grid">
+        <div class="field"><label for="cSize">Students in the class</label><input type="number" id="cSize" min="0" max="60" value="${esc(c.size)}" data-count="size"></div>
+        <div class="field"><label for="cWent">Students who went to at least one activity</label><input type="number" id="cWent" min="0" max="60" value="${esc(c.went)}" data-count="went"></div>
+        <div class="field"><label for="cActs">Different activities visited</label><input type="number" id="cActs" min="0" max="60" value="${esc(c.acts)}" data-count="acts"></div>
+        <div class="field"><label for="cGroups">Students who went with classmates</label><input type="number" id="cGroups" min="0" max="60" value="${esc(c.groups)}" data-count="groups"></div>
+      </div>
+      <div class="summary" id="summary" aria-live="polite"></div>
+    </div>
+    <div class="step-card">
+      <div class="eyebrow">Step 4 · D</div><h3>Class challenge</h3>
+      <p class="muted">Instead of individual points on a phone, the whole class works towards one goal on paper: a sticker on the challenge sheet for every visit.</p>
+      <div class="field"><label for="goal">Goal for this term (visits)</label><select id="goal">${[5,10,15,20].map(g=>`<option ${p.goal===g?'selected':''}>${g}</option>`).join('')}</select></div>
+      <button class="btn line" type="button" data-sheet="challenge" style="align-self:flex-start">${svg('print')} Print the challenge sheet</button>
+    </div>
+  </div>
+  <div style="margin-top:16px">${navBtns(3,null)}</div>`;
+}
+function renderSummary(){
+  const c = P().counts; const el = $('#summary'); if(!el) return;
+  const size=+c.size, went=+c.went;
+  const pct = size>0 && c.went!=='' ? Math.round(Math.min(went,size)/size*100) : null;
+  const grp = went>0 && c.groups!=='' ? Math.round(Math.min(+c.groups,went)/went*100) : null;
+  el.innerHTML = `<div><b>${pct===null?'—':pct+'%'}</b><span>of the class took part</span></div><div><b>${c.acts===''?'—':esc(c.acts)}</b><span>activities visited</span></div><div><b>${grp===null?'—':grp+'%'}</b><span>went with classmates</span></div>`;
+}
+
+// ---------- printable sheets ----------
+const brand = () => `<div class="s-brand"><span style="font:800 18px var(--display);color:#25243A">CONNECT</span><span>${esc(classLabel())}</span></div>`;
+function sheet(kind){
+  const ps = picks(); const p = P();
+  const icon = a => `<div class="ic" style="background:${CATS[a.cat].color}">${svg(a.cat)}</div>`;
+  if(kind==='board') return `<div class="sheet">${brand()}<h1>Our class plan</h1><p class="s-sub">Free activities near ${esc(placeName())} · ages ${AGE_LABEL[p.age]}</p>
+    <div class="s-tiles">${ps.map(a=>`<div class="s-tile">${icon(a)}<div><b>${esc(a.name)}</b><p>${esc(a.schedule||'See the official page')}<br>${esc(DNAME[a.district])}${a.address?` · ${esc(a.address)}`:''}<br><b style="font:700 13px var(--body);display:inline">${esc(a.priceText||priceShort(a))}</b></p></div></div>`).join('')}</div>
+    <div class="s-foot"><div><div class="big">Interested? Tell your tutor.</div><p style="margin-top:6px;color:#4A4760">Sign the interest sheet. You can go with classmates.</p></div></div></div>`;
+  if(kind==='interest') return `<div class="sheet">${brand()}<h1>Which one would you try?</h1><p class="s-sub">Write your name under the activities you’d like to try. Tick the box if you’d like to go with classmates.</p>
+    <div class="s-legend"><span class="bx"></span> I’d like to go with classmates</div>
+    <div class="s-int">${ps.map(a=>`<div class="blk"><b>${esc(a.name)}</b><small>${esc(a.schedule||'')}${a.schedule?' · ':''}${esc(DNAME[a.district])}</small>${'<div class="s-line"><span class="bx"></span></div>'.repeat(ps.length>6?4:6)}</div>`).join('')}</div></div>`;
+  if(kind==='letter') return `<div class="sheet s-letter">${brand()}<h2>Dear families,</h2><p style="margin-top:10px">This term, ${esc(p.cls?`class ${p.cls}`:'our class')}${p.school?` at ${esc(p.school)}`:''} is taking part in CONNECT, a project that helps schools bring the free and low-cost activities in our neighbourhood closer to students, so they can spend more of their free time offline, doing things together.</p>
+    <p>These are the activities we have chosen. Registration (if needed) is done on each organiser’s official page:</p>
+    <div class="s-acts">${ps.map(a=>`<div class="s-act"><div><b>${esc(a.name)}</b><span>${esc(a.schedule||'')}${a.schedule?' · ':''}${esc(DNAME[a.district])} · ${esc(a.priceText||priceShort(a))} · ${esc(orgOf(a).name)}</span><span>${esc(linkOf(a))}</span></div>${linkOf(a)?qrImg(linkOf(a),'QR code to the official page of '+a.name):''}</div>`).join('')}</div>
+    <p>Your child doesn’t need any app or account. In class they can sign up on paper if an activity interests them, and we will help them go with classmates. CONNECT collects no personal data and has no chats or profiles.</p>
+    <p>Kind regards,<br>The tutor</p>
+    <div class="s-cut"><h2 style="font-size:17px">Authorisation for a first group visit</h2><p style="margin-top:10px">I authorise <span class="s-fill"></span> of class <span class="s-fill" style="min-width:90px">${esc(p.cls||'')}</span> to take part in a first group visit to <span class="s-fill" style="min-width:240px">${p.visit.act&&byId(p.visit.act)?esc(byId(p.visit.act).name):''}</span> on <span class="s-fill" style="min-width:110px"></span>, accompanied by school staff.</p><p style="margin-top:18px">Name of parent or guardian <span class="s-fill" style="min-width:210px"></span> Signature <span class="s-fill" style="min-width:150px"></span></p></div></div>`;
+  if(kind==='challenge') return `<div class="sheet">${brand()}<h1>Our neighbourhood challenge</h1><p class="s-sub">Goal: <b>${p.goal} visits</b> this term. Add a sticker every time someone from the class goes to one of our activities.</p>
+    <div class="s-goal">${Array.from({length:p.goal},(_,i)=>`<div>${i+1}</div>`).join('')}</div>
+    <h2 style="margin:10px 0 12px">Where did we go?</h2>
+    <div class="s-ch-acts">${ps.map(a=>`<div><i style="background:${CATS[a.cat].color}"></i><b>${esc(a.name)}</b><span class="boxes">${'<span></span>'.repeat(6)}</span></div>`).join('')}</div>
+    <p style="margin-top:22px;color:#4A4760">When we reach the goal, we celebrate together as a class.</p></div>`;
+}
+const SHEET_NAME = {board:'Classroom board', interest:'Interest sheet', letter:'Family letter', challenge:'Class challenge'};
+function openSheet(kind){
+  if(P().picks.length<3){ toast('Choose at least 3 activities first.'); return; }
+  const html = sheet(kind);
+  $('#printArea').innerHTML = html;
+  document.body.classList.add('printing');
+  openDlg(`<div class="dlg-body"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding-right:44px"><h2 style="font-size:24px">${SHEET_NAME[kind]}</h2><button class="btn primary" type="button" data-doprint>${svg('print')} Print</button></div>
+    <div class="sheet-wrap"><div class="sheet-scale" id="sheetScale">${html}</div></div>
+    <p class="muted" style="font-size:13px">A4 format. If the print window doesn’t open, press Ctrl+P (Cmd+P on Mac) while this preview is open.</p></div>`, true);
+  fitSheet();
+}
+function fitSheet(){ const w=$('.sheet-wrap'), s=$('#sheetScale'); if(!w||!s) return; const k=Math.min(1,(w.clientWidth-28)/794); s.style.transform=`scale(${k})`; s.style.height=(s.firstElementChild.offsetHeight*k)+'px'; s.style.width='794px'; }
+addEventListener('resize', fitSheet);
+
+// ---------- events ----------
+document.addEventListener('submit', e => {
+  if(e.target.id!=='f1') return; e.preventDefault();
+  const age = (document.querySelector('input[name="p1Age"]:checked')||{}).value; const d = $('#p1Dist').value;
+  if(!d || !age){ const er=$('#e1'); er.textContent='Choose the district of your school and the age of the group.'; er.hidden=false; return; }
+  Object.assign(P(), {school:$('#p1School').value.trim(), cls:$('#p1Class').value.trim(), district:d, age});
+  save(); goStep(2);
+});
+document.addEventListener('click', e => {
+  const t = e.target;
+  const st = t.closest('[data-step]'); if(st && !st.disabled){ goStep(+st.dataset.step); return; }
+  const fl = t.closest('[data-filt]'); if(fl){ P().filt[fl.dataset.filt] = fl.dataset.v; save(); renderWizard(); return; }
+  const pk = t.closest('[data-pick]');
+  if(pk){ const id=pk.dataset.pick, i=P().picks.indexOf(id); if(i>=0) P().picks.splice(i,1); else if(P().picks.length<8) P().picks.push(id); save(); const y=scrollY; renderWizard(); scrollTo(0,y); return; }
+  const sh = t.closest('[data-sheet]'); if(sh){ openSheet(sh.dataset.sheet); return; }
+  if(t.closest('[data-doprint]')){ try { window.print(); } catch(err){ toast('Press Ctrl+P (Cmd+P on Mac) to print.'); } return; }
+  const mt = t.closest('[data-mailteam]'); if(mt){ if(!TEAM_EMAIL){ toast('The team email will be added here soon.'); return; } location.href=`mailto:${TEAM_EMAIL}?subject=${encodeURIComponent('CONNECT')}`; return; }
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if(t.id==='visitAct'){ P().visit.act = t.value; save(); }
+  if(t.dataset.vcheck!==undefined){ P().visit.checks[t.dataset.vcheck] = t.checked; save(); }
+  if(t.id==='goal'){ P().goal = +t.value; save(); }
+});
+document.addEventListener('input', e => { const k = e.target.dataset.count; if(k){ P().counts[k] = e.target.value; save(); renderSummary(); } });
+$('#newPlan').addEventListener('click', e => {
+  if(!e.currentTarget.dataset.arm){ e.currentTarget.dataset.arm='1'; e.currentTarget.textContent='Tap again to clear the plan'; setTimeout(()=>{ const b=$('#newPlan'); delete b.dataset.arm; b.textContent='Start a new plan'; },4000); return; }
+  S.plan = freshPlan(); save(); delete e.currentTarget.dataset.arm; e.currentTarget.textContent='Start a new plan'; renderWizard(); toast('New plan started');
+});
+
+// ---------- static content ----------
+function renderStatic(){
+  document.querySelectorAll('svg[data-icon]').forEach(s=>{ s.innerHTML = ICONS[s.dataset.icon]||''; s.setAttribute('fill','none'); s.setAttribute('stroke','currentColor'); s.setAttribute('stroke-width','2'); s.setAttribute('stroke-linecap','round'); s.setAttribute('stroke-linejoin','round'); });
+  const HOW = [['Your class','Choose your school’s district and the age of the group.','school','var(--soft-yellow)'],['Choose activities','Pick 3 to 8 free activities near your school, from official sources.','search','var(--blue)'],['Print materials','A board for class, an interest sheet, a letter for families and a class challenge.','print','var(--lav)'],['Organise & follow up','Form groups, plan a first visit together and count participation at the end of term.','users','#FFD3CE']];
+  $('#howSteps').innerHTML = HOW.map((s,i)=>`<div class="step"><div class="ill" style="background:${s[3]}">${svg(s[2])}</div><div class="num">0${i+1}</div><h3>${s[0]}</h3><p class="muted">${s[1]}</p></div>`).join('');
+  $('#matsHome').innerHTML = MATS.map(([k,t,d,th])=>`<div class="mat"><div class="thumb" aria-hidden="true">${th}</div><h3>${t}</h3><p class="muted">${d}</p></div>`).join('');
+  const SAFE = ['Students don’t need an app, an account or a phone to take part.','No personal data about students is collected.','No profiles, no chats, no social network.','No advertising.','The end-of-term count is numbers only, never names.','Every activity comes from an official source and shows when it was last checked.'];
+  $('#safety').innerHTML = SAFE.map(t=>`<div class="safe">${svg('shield')}<p>${t}</p></div>`).join('');
+  $('#orgs').innerHTML = Object.values(ORGS).map(o=>`<div class="org"><div class="oh"><div class="mono" style="background:${o.color}" aria-hidden="true">${o.mono}</div><div><h3>${esc(o.name)}</h3><span class="tag ok">Official source</span></div></div><p>${esc(o.desc)}</p>${o.url?`<a href="${esc(o.url)}" target="_blank" rel="noopener noreferrer" style="font-weight:700;font-size:14px">Official website ↗</a>`:''}</div>`).join('');
+}
+
+// ---------- admin ----------
+let adminView='all';
+function statusTags(a){
+  let t='';
+  if(isExpired(a)) t+='<span class="tag exp">Expired</span>';
+  if(a.full) t+='<span class="tag full">Full</span>';
+  if(a.demo) t+='<span class="tag demo">Demo</span>';
+  t += a.status==='verified' ? '<span class="tag ok">Verified</span>' : '<span class="tag tbc">Needs check</span>';
+  return t;
+}
+function renderAdmin(){
+  const all=S.db, exp=all.filter(isExpired), full=all.filter(a=>a.full), unv=all.filter(a=>a.status!=='verified');
+  $('#kpis').innerHTML = `<div class="kpi"><b>${all.length-exp.length}</b><span>Active listings</span></div><div class="kpi"><b>${unv.length}</b><span>Need verification</span></div><div class="kpi"><b>${full.length}</b><span>Fully booked</span></div><div class="kpi"><b>${exp.length}</b><span>Expired (hidden)</span></div>`;
+  $('#adminFilter').innerHTML = [['all','All'],['unv','Needs check'],['exp','Expired'],['full','Full']].map(([v,l])=>`<button type="button" class="chip" data-av="${v}" aria-pressed="${adminView===v}">${l}</button>`).join('');
+  const rows = all.filter(a=> adminView==='all' || (adminView==='unv'&&a.status!=='verified') || (adminView==='exp'&&isExpired(a)) || (adminView==='full'&&a.full));
+  $('#adminRows').innerHTML = rows.length ? rows.map(a=>`<tr><td><b>${esc(a.name)}</b><div class="muted" style="font-size:12px">${CATS[a.cat].label} · ${esc(orgOf(a).name)}</div></td><td>${esc(DNAME[a.district])}</td><td><div class="ctags">${statusTags(a)}</div></td><td style="font-variant-numeric:tabular-nums">${esc(a.endDate||'—')}</td><td style="font-variant-numeric:tabular-nums">${a.lastVerified?esc(a.lastVerified):'<span class="tbc-text">never</span>'}</td>
+    <td><div class="acts"><button class="btn ghost small" type="button" data-ad="edit" data-id="${a.id}">Edit</button><button class="btn line small" type="button" data-ad="verify" data-id="${a.id}">Verify</button><button class="btn line small" type="button" data-ad="full" data-id="${a.id}">${a.full?'Reopen':'Mark full'}</button><button class="btn line small" type="button" data-ad="del" data-id="${a.id}" style="color:var(--bad)">Remove</button></div></td></tr>`).join('') : `<tr><td colspan="6" class="muted" style="text-align:center;padding:30px">No activities in this view.</td></tr>`;
+}
+$('#adminFilter').addEventListener('click', e => { const c=e.target.closest('[data-av]'); if(c){ adminView=c.dataset.av; renderAdmin(); } });
+const delArm = {};
+$('#adminRows').addEventListener('click', e => {
+  const b=e.target.closest('[data-ad]'); if(!b) return; const a=byId(b.dataset.id); if(!a) return;
+  const act=b.dataset.ad;
+  if(act==='edit') return editForm(a);
+  if(act==='verify'){ if(!a.regUrl && !a.infoUrl){ toast('Add the official registration or information URL before verifying.'); return editForm(a); } a.status='verified'; a.lastVerified=today(); save(); renderAll(); toast('Marked as verified today'); }
+  if(act==='full'){ a.full=!a.full; save(); renderAll(); toast(a.full?'Marked as fully booked':'Reopened for registration'); }
+  if(act==='del'){ if(!delArm[a.id]){ delArm[a.id]=true; b.textContent='Confirm remove'; setTimeout(()=>{delArm[a.id]=false; b.textContent='Remove';},4000); return; } S.db=S.db.filter(x=>x.id!==a.id); save(); renderAll(); toast('Activity removed'); }
+});
+$('#addAct').addEventListener('click', ()=>editForm(null));
+function editForm(a){
+  const isNew=!a; a = a || {id:'n'+Date.now(),regType:'online',infoUrl:'',name:'',cat:'sports',sub:'',desc:'',ageMin:12,ageMax:18,price:'free',scholarship:false,district:'gracia',address:'',schedule:'',days:['weekday'],times:['afternoon'],dates:'',endDate:'',duration:'',regRequired:true,regReq:'',org:'ajuntament',regUrl:'',source:'',status:'demo',demo:false,full:false,trending:false};
+  const o=(arr,sel)=>arr.map(([v,l])=>`<option value="${v}" ${v===sel?'selected':''}>${esc(l)}</option>`).join('');
+  const chk=(id,on,l)=>`<label><input type="checkbox" id="${id}" ${on?'checked':''}> ${l}</label>`;
+  openDlg(`<div class="dlg-body"><h2 style="font-size:28px">${isNew?'Add activity':'Edit activity'}</h2>
+   <form id="actForm" class="form-grid" novalidate>
+    <div class="field full"><label for="eName">Activity name</label><input type="text" id="eName" value="${esc(a.name)}" required></div>
+    <div class="field full"><label for="eDesc">Short description</label><textarea id="eDesc" rows="2">${esc(a.desc)}</textarea></div>
+    <div class="field"><label for="eCat">Category</label><select id="eCat">${o(Object.entries(CATS).map(([k,c])=>[k,c.label]),a.cat)}</select></div>
+    <div class="field"><label for="eSub">Type (e.g. Football)</label><input type="text" id="eSub" value="${esc(a.sub)}"></div>
+    <div class="field"><label for="eAgeMin">Min age</label><input type="number" id="eAgeMin" min="0" max="99" value="${a.ageMin}"></div>
+    <div class="field"><label for="eAgeMax">Max age</label><input type="number" id="eAgeMax" min="0" max="99" value="${a.ageMax}"></div>
+    <div class="field"><label for="ePrice">Price type</label><select id="ePrice">${o([['free','Free'],['low','Low cost'],['paid','Paid'],['tbc','Varies / to be confirmed']],a.price)}</select></div>
+    <div class="field"><label for="ePriceText">Exact price (from official source)</label><input type="text" id="ePriceText" value="${esc(a.priceText||'')}"></div>
+    <div class="field"><label for="eDist">District</label><select id="eDist">${o(DISTRICTS.map(d=>[d.id,d.name]),a.district)}</select></div>
+    <div class="field"><label for="eAddr">Exact address</label><input type="text" id="eAddr" value="${esc(a.address||'')}"></div>
+    <div class="field"><label for="eSched">Schedule</label><input type="text" id="eSched" value="${esc(a.schedule||'')}"></div>
+    <div class="field"><label for="eDates">Available dates</label><input type="text" id="eDates" value="${esc(a.dates||'')}"></div>
+    <div class="field"><label for="eEnd">Last day (hides when passed)</label><input type="date" id="eEnd" value="${esc(a.endDate||'')}"></div>
+    <div class="field"><label for="eDur">Duration</label><input type="text" id="eDur" value="${esc(a.duration||'')}"></div>
+    <div class="field full"><span class="lab">Availability</span><div class="checks">${chk('dWk',a.days.includes('weekday'),'Weekdays')}${chk('dWe',a.days.includes('weekend'),'Weekends')}${chk('tMo',a.times.includes('morning'),'Morning')}${chk('tAf',a.times.includes('afternoon'),'Afternoon')}</div></div>
+    <div class="field"><label for="eOrg">Organisation</label><select id="eOrg">${o(Object.entries(ORGS).map(([k,v])=>[k,v.name]),a.org)}</select></div>
+    <div class="field"><label for="eRegReq">Registration requirements</label><input type="text" id="eRegReq" value="${esc(a.regReq||'')}"></div>
+    <div class="field"><label for="eRegType">How people sign up</label><select id="eRegType">${o([['online','Online registration page'],['site','Organiser website'],['inperson','In person / by phone'],['none','No registration needed']],a.regType||'online')}</select></div>
+    <div class="field"><label for="eInfo">Official information page</label><input type="url" id="eInfo" placeholder="https://" value="${esc(a.infoUrl||'')}"></div>
+    <div class="field full"><label for="eUrl">Official registration URL</label><input type="url" id="eUrl" placeholder="https://" value="${esc(a.regUrl||'')}"></div>
+    <div class="field full"><label for="eSrc">Original source URL</label><input type="url" id="eSrc" placeholder="https://" value="${esc(a.source||'')}"></div>
+    <div class="field full"><div class="checks">${chk('eRegOn',a.regRequired,'Registration required')}${chk('eAid',a.scholarship,'Scholarships available')}${chk('eFull',a.full,'Fully booked')}${chk('eTrend',a.trending,'Show in Trending')}${chk('eDemo',a.demo,'This is demo data')}</div></div>
+    <p class="err full" id="eErr" hidden></p>
+    <div class="full cactions"><button class="btn primary" type="submit">${isNew?'Add activity':'Save changes'}</button><button class="btn line" type="button" data-close>Cancel</button></div>
+   </form></div>`);
+  $('#actForm').addEventListener('submit', ev => {
+    ev.preventDefault(); const er=$('#eErr'); const g=id=>$('#'+id).value.trim();
+    const url=g('eUrl'), src=g('eSrc'), info=g('eInfo'), mn=+g('eAgeMin'), mx=+g('eAgeMax');
+    const fail=m=>{er.textContent=m; er.hidden=false;};
+    if(!g('eName')) return fail('Add an activity name.');
+    if(url && !/^https?:\/\/[^\s]+\.[^\s]+/.test(url)) return fail('The registration URL must be a full web address starting with https://.');
+    if(src && !/^https?:\/\/[^\s]+\.[^\s]+/.test(src)) return fail('The source URL must be a full web address.');
+    if(info && !/^https?:\/\/[^\s]+\.[^\s]+/.test(info)) return fail('The information page must be a full web address.');
+    if(!(mn>=0 && mx<=99 && mn<=mx && mx>=12 && mn<=18)) return fail('The age range must include at least one age from 12 to 18, with min ≤ max. Use 99 for “no upper limit”.');
+    const days=[$('#dWk').checked&&'weekday',$('#dWe').checked&&'weekend'].filter(Boolean), times=[$('#tMo').checked&&'morning',$('#tAf').checked&&'afternoon'].filter(Boolean);
+    if(!days.length||!times.length) return fail('Pick at least one day type and one time of day.');
+    const changedLink = (a.regUrl||'')!==url;
+    Object.assign(a,{name:g('eName'),desc:g('eDesc'),cat:g('eCat'),sub:g('eSub'),ageMin:mn,ageMax:mx,price:g('ePrice'),priceText:g('ePriceText')||null,district:g('eDist'),address:g('eAddr')||null,schedule:g('eSched')||null,dates:g('eDates')||null,endDate:g('eEnd')||null,duration:g('eDur')||null,days,times,org:g('eOrg'),regReq:g('eRegReq')||null,regUrl:url||null,infoUrl:info||null,regType:g('eRegType'),source:src||null,regRequired:$('#eRegOn').checked,scholarship:$('#eAid').checked,full:$('#eFull').checked,trending:$('#eTrend').checked,demo:$('#eDemo').checked});
+    if(changedLink && a.status==='verified'){ a.status='demo'; }
+    if(isNew) S.db.unshift(a);
+    save(); dlg.close(); renderAll(); toast(isNew?'Activity added':'Changes saved');
+  });
+}
+
+
+
+// ---------- router ----------
+const VIEWS=['home','plan','families','about','admin'];
+function route(){
+  const raw=(location.hash||'#home').slice(1); const [h0, q] = raw.split('?');
+  let h=h0, anchor=null;
+  if(h==='how'){ h='home'; anchor='how'; }
+  if(!VIEWS.includes(h)) h='home';
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on', v.dataset.view===h));
+  document.querySelectorAll('[data-nav]').forEach(a=>{ const on = a.dataset.nav===h; on?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'); });
+  if(h==='plan') renderWizard();
+  if(h==='admin') renderAdmin();
+  if(dlg.open) dlg.close();
+  if(anchor){ setTimeout(()=>document.getElementById(anchor)?.scrollIntoView({behavior:'smooth'}),50); } else window.scrollTo(0,0);
+}
+window.addEventListener('hashchange', route);
+function renderAll(){ renderAdmin(); if(document.querySelector('.view.on[data-view="plan"]')) renderWizard(); }
+renderStatic(); route();
+
+})();
+</script>
+
+</body>
+</html>
